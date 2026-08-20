@@ -1,0 +1,449 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live Track</title>
+    <style>
+      :root {
+        --panel-bg: rgba(17, 24, 39, 0.9);
+        --panel-border: rgba(255, 255, 255, 0.12);
+        --panel-text: #f8fafc;
+        --panel-muted: rgba(248, 250, 252, 0.7);
+        --accent: #1d4ed8;
+        --accent-soft: rgba(29, 78, 216, 0.16);
+      }
+
+      html, body { height: 100%; margin: 0; padding: 0; }
+
+      body {
+        font-family: Inter, Roboto, Arial, sans-serif;
+        background: #0f172a;
+        overflow: hidden;
+      }
+
+      #map { height: 100%; width: 100%; }
+
+      #info {
+        position: absolute;
+        left: 16px;
+        top: 16px;
+        z-index: 10;
+        background: var(--panel-bg);
+        color: var(--panel-text);
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid var(--panel-border);
+        box-shadow: 0 18px 48px rgba(15, 23, 42, 0.35);
+        backdrop-filter: blur(16px);
+        min-width: 240px;
+        max-width: calc(100vw - 32px);
+      }
+
+      #title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      #title::before {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.15);
+      }
+
+      .meta {
+        font-size: 13px;
+        color: var(--panel-muted);
+        line-height: 1.45;
+        margin-top: 2px;
+      }
+
+      #status {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 12px;
+        color: var(--panel-muted);
+      }
+
+      #toolbar {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        z-index: 10;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .tool-btn {
+        appearance: none;
+        border: none;
+        border-radius: 999px;
+        padding: 12px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        color: white;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        box-shadow: 0 12px 28px rgba(29, 78, 216, 0.3);
+      }
+
+      .tool-btn.secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: none;
+      }
+
+      @media (max-width: 720px) {
+        #info { left: 12px; top: 12px; right: 12px; }
+        #toolbar { right: 12px; top: auto; bottom: 12px; left: 12px; justify-content: space-between; }
+        .tool-btn { flex: 1; }
+      }
+    </style>
+    <!-- Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <!-- Generated from .env at deploy time; not committed with secrets. -->
+    <script src="/track-config.js"></script>
+  </head>
+  <body>
+    <div id="info">
+      <div id="title">Live Location</div>
+      <div id="userName" class="meta">User: —</div>
+      <div id="expires" class="meta">Expires: —</div>
+      <div id="lastUpdated" class="meta">Last updated: —</div>
+      <div id="viewerLocation" class="meta">Your location: —</div>
+      <div id="status">Waiting for live location updates...</div>
+    </div>
+    <div id="toolbar">
+      <button id="fitBoundsBtn" class="tool-btn secondary" type="button">Fit live view</button>
+      <button id="recenterUserBtn" class="tool-btn secondary" type="button">Recenter user</button>
+      <button id="followBtn" class="tool-btn" type="button">Follow live</button>
+      <button id="navigateBtn" class="tool-btn secondary" type="button">Navigate</button>
+    </div>
+    <div id="map"></div>
+
+    <script>
+      const trackConfig = window.__TRACK_CONFIG__ || {};
+      const firebaseConfig = trackConfig.firebaseConfig;
+      if (!firebaseConfig) {
+        document.getElementById('title').textContent = 'Track config missing';
+        throw new Error('Missing window.__TRACK_CONFIG__. Generate web/track-config.js from .env before deploying.');
+      }
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+
+      function createBlueDotIcon(scale = 12) {
+        return {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: '#1d4ed8',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 3,
+          scale,
+        };
+      }
+
+      function createViewerIcon(scale = 10) {
+        return {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: '#14b8a6',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 3,
+          scale,
+        };
+      }
+
+      function loadGoogleMaps(apiKey) {
+        return new Promise((resolve, reject) => {
+          if (window.google && window.google.maps) {
+            resolve();
+            return;
+          }
+
+          if (!apiKey) {
+            reject(new Error('Missing Google Maps API key in track config'));
+            return;
+          }
+
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}`;
+          script.async = true;
+          script.defer = true;
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error('Failed to load Google Maps script'));
+          document.head.appendChild(script);
+        });
+      }
+
+      // Extract shareId from path, expects /track/{shareId}
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      const shareId = pathParts[pathParts.length - 1];
+
+      let map;
+      let trackedMarker;
+      let viewerMarker;
+      let liveBounds;
+      let followLive = true;
+      let trackedPosition = null;
+      let viewerPosition = null;
+      let watchId = null;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: { lat: 20, lng: 78 },
+          zoom: 6,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+          clickableIcons: false,
+          zoomControl: true,
+          gestureHandling: 'greedy',
+          styles: [
+            { elementType: 'geometry', stylers: [{ color: '#0f172a' }] },
+            { elementType: 'labels.text.fill', stylers: [{ color: '#cbd5e1' }] },
+            { elementType: 'labels.text.stroke', stylers: [{ color: '#0f172a' }] },
+            { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+            { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1e293b' }] },
+            { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#94a3b8' }] },
+            { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0b1220' }] },
+          ],
+        });
+
+        liveBounds = new google.maps.LatLngBounds();
+        wireControls();
+      }
+
+      function wireControls() {
+        document.getElementById('fitBoundsBtn').addEventListener('click', () => {
+          followLive = false;
+          fitToVisibleMarkers();
+        });
+
+        document.getElementById('recenterUserBtn').addEventListener('click', () => {
+          recenterTrackedUser();
+        });
+
+        document.getElementById('followBtn').addEventListener('click', () => {
+          followLive = true;
+          recenterTrackedUser();
+        });
+
+        document.getElementById('navigateBtn').addEventListener('click', navigateToTrackedUser);
+      }
+
+      function openDirectionsUrl(origin, destination) {
+        const url = new URL('https://www.google.com/maps/dir/');
+        url.searchParams.set('api', '1');
+        url.searchParams.set('origin', `${origin.lat},${origin.lng}`);
+        url.searchParams.set('destination', `${destination.lat},${destination.lng}`);
+        url.searchParams.set('travelmode', 'driving');
+        url.searchParams.set('dir_action', 'navigate');
+        window.open(url.toString(), '_blank', 'noopener,noreferrer');
+      }
+
+      function navigateToTrackedUser() {
+        if (!trackedPosition) {
+          setStatus('Waiting for the tracked user location before navigation.');
+          return;
+        }
+
+        if (viewerPosition) {
+          openDirectionsUrl(viewerPosition, trackedPosition);
+          setStatus('Opening navigation to the tracked user.');
+          return;
+        }
+
+        if (!navigator.geolocation) {
+          setStatus('Navigation needs browser location permission.');
+          return;
+        }
+
+        setStatus('Requesting browser location permission for navigation...');
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const origin = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+            viewerPosition = origin;
+            document.getElementById('viewerLocation').textContent =
+              `Your location: ${origin.lat.toFixed(5)}, ${origin.lng.toFixed(5)}`;
+            openDirectionsUrl(origin, trackedPosition);
+            setStatus('Opening navigation to the tracked user.');
+          },
+          (error) => {
+            if (error && error.code === error.PERMISSION_DENIED) {
+              setStatus('Location permission denied in browser settings. Enable it to navigate.');
+            } else {
+              setStatus('Could not get your location for navigation.');
+            }
+          },
+          { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
+        );
+      }
+
+      function fitToVisibleMarkers(forceCenter = false) {
+        if (!map) return;
+        const bounds = new google.maps.LatLngBounds();
+        if (trackedPosition) bounds.extend(trackedPosition);
+        if (viewerPosition) bounds.extend(viewerPosition);
+
+        if (bounds.isEmpty()) return;
+
+        if (forceCenter || followLive) {
+          if (!bounds.isEmpty() && (trackedPosition && viewerPosition)) {
+            map.fitBounds(bounds, 80);
+          } else if (trackedPosition) {
+            map.setCenter(trackedPosition);
+            map.setZoom(16);
+          }
+        }
+      }
+
+      function recenterTrackedUser() {
+        if (!map || !trackedPosition) {
+          setStatus('Waiting for the tracked user location to recenter.');
+          return;
+        }
+
+        map.setCenter(trackedPosition);
+        map.setZoom(16);
+        setStatus('Recentered on the tracked user.');
+      }
+
+      function setStatus(text) {
+        document.getElementById('status').textContent = text;
+      }
+
+      function updateViewerLocation(position) {
+        viewerPosition = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+
+        document.getElementById('viewerLocation').textContent =
+          `Your location: ${viewerPosition.lat.toFixed(5)}, ${viewerPosition.lng.toFixed(5)}`;
+
+        if (!viewerMarker) {
+          viewerMarker = new google.maps.Marker({
+            position: viewerPosition,
+            map,
+            title: 'Your location',
+            icon: createViewerIcon(),
+          });
+        } else {
+          viewerMarker.setPosition(viewerPosition);
+        }
+
+        if (followLive) {
+          recenterTrackedUser();
+        }
+      }
+
+      function startViewerTracking() {
+        if (!navigator.geolocation) {
+          document.getElementById('viewerLocation').textContent = 'Your location: unavailable';
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          updateViewerLocation,
+          () => {
+            document.getElementById('viewerLocation').textContent = 'Your location: permission needed';
+          },
+          { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
+        );
+
+        watchId = navigator.geolocation.watchPosition(
+          updateViewerLocation,
+          () => {},
+          { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
+        );
+      }
+
+      function updateFromSnapshot(snap) {
+        if (!snap) return;
+        const lat = snap.lat;
+        const lng = snap.lng;
+        const ts = snap.timestamp;
+        const userName = snap.userName || 'User';
+        const expiresAt = snap.expiresAt ? new Date(snap.expiresAt) : null;
+        const active = snap.active !== false;
+
+        document.getElementById('userName').textContent = userName;
+        document.getElementById('lastUpdated').textContent = ts ? ('Last updated: ' + new Date(ts).toLocaleString()) : 'Last updated: —';
+        document.getElementById('expires').textContent = expiresAt ? ('Expires: ' + expiresAt.toLocaleString()) : 'Expires: —';
+
+        if (!active) {
+          document.getElementById('lastUpdated').textContent = 'Sharing ended';
+          setStatus('Live sharing ended.');
+          return;
+        }
+
+        const pos = { lat: lat, lng: lng };
+        trackedPosition = pos;
+        if (!trackedMarker) {
+          trackedMarker = new google.maps.Marker({
+            position: pos,
+            map: map,
+            title: userName,
+            icon: createBlueDotIcon(),
+          });
+        } else {
+          trackedMarker.setPosition(pos);
+        }
+
+        setStatus('Live location updating every 15 seconds.');
+
+        if (followLive) {
+          fitToVisibleMarkers(true);
+        }
+      }
+
+      function fetchOnce() {
+        db.ref('live_location_share/' + shareId).get().then((snap) => {
+          const val = snap.val();
+          if (val) {
+            updateFromSnapshot(val);
+          } else {
+            setStatus('Waiting for the SOS location to go live...');
+          }
+        }).catch((e) => console.error(e));
+      }
+
+      window.onload = async () => {
+        await loadGoogleMaps(trackConfig.googleMapsApiKey);
+        initMap();
+        if (!shareId) {
+          document.getElementById('title').textContent = 'No share id';
+          return;
+        }
+
+        startViewerTracking();
+
+        // Poll every 15s
+        fetchOnce();
+        setInterval(fetchOnce, 15000);
+      };
+
+      window.addEventListener('beforeunload', () => {
+        if (watchId != null && navigator.geolocation) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+      });
+    </script>
+  </body>
+</html>

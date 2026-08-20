@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Google Assistant App Actions -->
+    <!-- Users can say: "Hey Google, Help me on Nari Shakti" -->
+    <capability android:name="actions.intent.OPEN_APP_FEATURE">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.example.nari_shakti"
+            android:targetClass="com.example.nari_shakti.MainActivity">
+            <parameter
+                android:name="feature"
+                android:key="feature" />
+            <url-template android:value="narishakti://sos" />
+        </intent>
+    </capability>
+
+    <!-- Static shortcuts for common voice triggers -->
+    <shortcut
+        android:shortcutId="sos_help"
+        android:shortcutShortLabel="@string/shortcut_help"
+        android:shortcutLongLabel="@string/shortcut_help_long"
+        android:enabled="true">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="narishakti://sos" />
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@string/shortcut_help" />
+        </capability-binding>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="sos_bachao"
+        android:shortcutShortLabel="@string/shortcut_bachao"
+        android:shortcutLongLabel="@string/shortcut_bachao_long"
+        android:enabled="true">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="narishakti://sos" />
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@string/shortcut_bachao" />
+        </capability-binding>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="sos_emergency"
+        android:shortcutShortLabel="@string/shortcut_emergency"
+        android:shortcutLongLabel="@string/shortcut_emergency_long"
+        android:enabled="true">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="narishakti://sos" />
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@string/shortcut_emergency" />
+        </capability-binding>
+    </shortcut>
+
+</shortcuts>

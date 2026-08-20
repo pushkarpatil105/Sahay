@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Nari Shakti</string>
+
+    <!-- Accessibility Service -->
+    <string name="accessibility_service_description">Nari Shakti uses this service to detect rapid volume button presses for emergency SOS activation. No screen content is accessed.</string>
+
+    <!-- Google Assistant Shortcuts -->
+    <string name="shortcut_help">Help me</string>
+    <string name="shortcut_help_long">Help me on Nari Shakti</string>
+    <string name="shortcut_bachao">Bachao</string>
+    <string name="shortcut_bachao_long">Bachao on Nari Shakti</string>
+    <string name="shortcut_emergency">Emergency</string>
+    <string name="shortcut_emergency_long">Emergency on Nari Shakti</string>
+</resources>

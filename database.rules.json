@@ -1,0 +1,13 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "live_location_share": {
+      "$shareId": {
+        ".read": "data.child('active').val() === true && data.child('expiresAt').val() > now",
+        ".write": "auth != null && (data.child('userId').val() === auth.uid || newData.child('userId').val() === auth.uid)",
+        ".validate": "newData.hasChildren(['lat', 'lng', 'timestamp', 'userName', 'userId', 'expiresAt', 'active'])"
+      }
+    }
+  }
+}

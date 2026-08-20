@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF111111"
+    android:padding="24dp">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="48dp"
+        android:text="Emergency SOS"
+        android:textColor="#FFFFFFFF"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/tvSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTitle"
+        android:layout_marginTop="8dp"
+        android:text="Your phone will:"
+        android:textColor="#AAFFFFFF"
+        android:textSize="16sp" />
+
+    <!-- Feature checklist -->
+    <LinearLayout
+        android:id="@+id/featureList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvSubtitle"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:text="  ✓   Send SMS alert to contacts"
+            android:textColor="#FF4CAF50"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:text="  ✓   Share location with contacts"
+            android:textColor="#FF4CAF50"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  ✓   Record video evidence"
+            android:textColor="#FF4CAF50"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- Countdown circle area (centered) -->
+    <FrameLayout
+        android:id="@+id/countdownContainer"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_centerInParent="true">
+
+        <!-- Custom countdown ring -->
+        <view
+            class="com.example.nari_shakti.CountdownCircleView"
+            android:id="@+id/countdownCircle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Countdown text inside the circle -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tvCountdownSeconds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5"
+                android:textColor="#FFFFFFFF"
+                android:textSize="56sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="seconds"
+                android:textColor="#AAFFFFFF"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Status text below circle -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/countdownContainer"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="SOS will trigger automatically..."
+        android:textColor="#AAFFFFFF"
+        android:textSize="14sp" />
+
+    <!-- 112 Override Button -->
+    <Button
+        android:id="@+id/btnDial112"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_above="@id/btnCancel"
+        android:layout_marginBottom="16dp"
+        android:text="🚨 DIAL 112 NOW"
+        android:textColor="#FFFFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:backgroundTint="#FFD32F2F" />
+
+    <!-- Cancel button at the bottom -->
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="32dp"
+        android:text="✕    I AM SAFE"
+        android:textColor="#FFFFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:backgroundTint="#FF4CAF50" />
+
+</RelativeLayout>

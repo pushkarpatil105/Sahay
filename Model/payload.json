@@ -1,0 +1,7 @@
+﻿{
+  "user_id": "test_user",
+  "origin": { "lat": 37.7749, "lng": -122.4194 },
+  "destination": { "lat": 37.8199, "lng": -122.4783 },
+  "trip_time": "2026-05-13T20:00:00Z",
+  "travel_mode": "driving"
+}

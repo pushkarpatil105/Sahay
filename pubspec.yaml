@@ -1,0 +1,59 @@
+name: nari_shakti
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  image_picker: ^1.0.7
+  shared_preferences: ^2.3.2
+  speech_to_text: ^7.0.0
+  cupertino_icons: ^1.0.8
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
+  firebase_storage: ^12.3.2
+  firebase_database: ^11.1.4
+  firebase_messaging: ^15.1.3
+  google_maps_flutter: ^2.5.3
+  geolocator: ^14.0.2
+  permission_handler: ^11.3.0
+  url_launcher: ^6.2.5
+  flutter_polyline_points: ^3.1.0
+  uuid: ^4.5.3
+  flutter_sound: ^9.2.13
+  archive: ^3.4.10
+  path_provider: ^2.1.2
+  open_file: ^3.3.2
+  share_plus: ^10.0.0
+  flutter_sms: ^3.0.1
+  sensors_plus: ^4.0.2
+  flutter_foreground_task: ^8.0.1
+  flutter_tts: ^4.2.0
+  http: ^1.2.0
+  crypto: ^3.0.3
+  camera: ^0.10.5
+  connectivity_plus: ^6.0.3
+  flutter_dotenv: ^6.0.0
+  flutter_blue_plus: ^1.31.15
+  video_thumbnail: ^0.5.3
+  google_mlkit_face_detection: ^0.11.0
+  tflite_flutter: ^0.11.0  
+  image: ^4.1.7
+  cached_network_image: ^3.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
+    - assets/models/facenet.tflite
