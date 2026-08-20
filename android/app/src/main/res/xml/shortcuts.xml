@@ -6,8 +6,8 @@
     <capability android:name="actions.intent.OPEN_APP_FEATURE">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.example.nari_shakti"
-            android:targetClass="com.example.nari_shakti.MainActivity">
+            android:targetPackage="com.example.Sahay"
+            android:targetClass="com.example.Sahay.MainActivity">
             <parameter
                 android:name="feature"
                 android:key="feature" />

@@ -1,4 +1,4 @@
-package com.example.nari_shakti
+package com.example.Sahay
 
 // Bridge to communicate SOS events from native services to Flutter
 object PowerButtonBridge {

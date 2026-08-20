@@ -70,7 +70,7 @@
 
         <!-- Custom countdown ring -->
         <view
-            class="com.example.nari_shakti.CountdownCircleView"
+            class="com.example.Sahay.CountdownCircleView"
             android:id="@+id/countdownCircle"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

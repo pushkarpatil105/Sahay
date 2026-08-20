@@ -1,6 +1,6 @@
 // android/app/src/main/kotlin/com/example/nari_shakti/SosReceiver.kt
 
-package com.example.nari_shakti
+package com.example.Sahay
 
 import android.content.BroadcastReceiver
 import android.content.Context
