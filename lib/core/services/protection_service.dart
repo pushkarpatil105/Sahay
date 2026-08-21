@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -6,28 +6,37 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'lock_screen_sos_service.dart';
 import 'sos_countdown_service.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:nari_shakti/main.dart';
+import 'package:sahay/main.dart';
 
 @pragma('vm:entry-point')
 void startCallback() {
   FlutterForegroundTask.setTaskHandler(ProtectionTaskHandler());
 }
 
-/// Foreground task handler — only voice detection runs here.
+/// Foreground task handler â€” only voice detection runs here.
 /// Shake detection is handled by native ShakeDetectionForegroundService
 /// which launches SosCountdownActivity over the lock screen.
 class ProtectionTaskHandler extends TaskHandler {
   final SpeechToText _speech = SpeechToText();
 
   final List<String> _keywords = [
-    'help', 'help me', 'bachao', 'bachaoo',
-    'bachao mujhe', 'help please', 'somebody help',
-    'halp', 'hellp', 'bacchao', 'pachao', 'heelp'
+    'help',
+    'help me',
+    'bachao',
+    'bachaoo',
+    'bachao mujhe',
+    'help please',
+    'somebody help',
+    'halp',
+    'hellp',
+    'bacchao',
+    'pachao',
+    'heelp',
   ];
 
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
-    // Shake detection removed — handled by native ShakeDetectionForegroundService
+    // Shake detection removed â€” handled by native ShakeDetectionForegroundService
     await _startVoiceDetection();
   }
 
@@ -79,18 +88,20 @@ class ProtectionService {
   static bool _isRunning = false;
 
   /// MethodChannel to start/stop the native ShakeDetectionForegroundService
-  static const MethodChannel _shakeChannel =
-      MethodChannel('com.narishakti.app/shake_service');
+  static const MethodChannel _shakeChannel = MethodChannel(
+    'com.sahay.app/shake_service',
+  );
 
   /// MethodChannel for notifications (used to receive native shake SOS events)
-  static const MethodChannel _notifChannel =
-      MethodChannel('com.narishakti.app/notifications');
+  static const MethodChannel _notifChannel = MethodChannel(
+    'com.sahay.app/notifications',
+  );
 
   void _initForegroundTask() {
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
-        channelId: 'nari_shakti_protection',
-        channelName: 'Nari Shakti Protection',
+        channelId: 'sahay_protection',
+        channelName: 'Sahay Protection',
         channelDescription: 'Active protection service',
         channelImportance: NotificationChannelImportance.HIGH,
         priority: NotificationPriority.HIGH,
@@ -119,8 +130,10 @@ class ProtectionService {
       // Check for Xiaomi / Redmi / POCO devices and redirect them to allow background popups
       bool isXiaomi = false;
       try {
-        isXiaomi = await const MethodChannel('com.narishakti.app/notifications')
-                .invokeMethod('isXiaomiDevice') ??
+        isXiaomi =
+            await const MethodChannel(
+              'com.sahay.app/notifications',
+            ).invokeMethod('isXiaomiDevice') ??
             false;
       } catch (e) {
         print('Error checking Xiaomi device: $e');
@@ -133,7 +146,8 @@ class ProtectionService {
           builder: (context) => AlertDialog(
             title: const Text('Xiaomi/Redmi Device Detected'),
             content: const Text(
-                'To ensure the SOS Timer pops up instantly during an emergency, you MUST enable "Display pop-up windows while running in the background" on the next screen.\n\nPlease find the setting and allow it.'),
+              'To ensure the SOS Timer pops up instantly during an emergency, you MUST enable "Display pop-up windows while running in the background" on the next screen.\n\nPlease find the setting and allow it.',
+            ),
             actions: [
               TextButton(
                 onPressed: () {
@@ -146,8 +160,9 @@ class ProtectionService {
         );
 
         try {
-          await const MethodChannel('com.narishakti.app/notifications')
-              .invokeMethod('requestXiaomiPopUpPermission');
+          await const MethodChannel(
+            'com.sahay.app/notifications',
+          ).invokeMethod('requestXiaomiPopUpPermission');
         } catch (e) {
           print('Xiaomi redirect failed: $e');
         }
@@ -157,8 +172,10 @@ class ProtectionService {
     // Check for Accessibility Service permission (for the 5x Volume Down Hardware Trigger)
     bool isAccessibilityEnabled = false;
     try {
-      isAccessibilityEnabled = await const MethodChannel('com.narishakti.app/notifications')
-              .invokeMethod('isAccessibilityServiceEnabled') ??
+      isAccessibilityEnabled =
+          await const MethodChannel(
+            'com.sahay.app/notifications',
+          ).invokeMethod('isAccessibilityServiceEnabled') ??
           false;
     } catch (e) {
       print('Error checking accessibility service: $e');
@@ -171,7 +188,8 @@ class ProtectionService {
         builder: (context) => AlertDialog(
           title: const Text('Enable Hardware SOS Trigger'),
           content: const Text(
-              'To trigger SOS rapidly by pressing the Volume Down button 5 times, Nari Shakti requires Accessibility permissions.\n\nOn the next screen, find "Nari Shakti" under "Downloaded Apps" or "Installed Services" and turn it ON to allow hardware button detection.'),
+            'To trigger SOS rapidly by pressing the Volume Down button 5 times, Sahay requires Accessibility permissions.\n\nOn the next screen, find "Sahay" under "Downloaded Apps" or "Installed Services" and turn it ON to allow hardware button detection.',
+          ),
           actions: [
             TextButton(
               onPressed: () {
@@ -184,8 +202,9 @@ class ProtectionService {
       );
 
       try {
-        await const MethodChannel('com.narishakti.app/notifications')
-            .invokeMethod('requestAccessibilityPermission');
+        await const MethodChannel(
+          'com.sahay.app/notifications',
+        ).invokeMethod('requestAccessibilityPermission');
       } catch (e) {
         print('Accessibility redirect failed: $e');
       }
@@ -207,7 +226,7 @@ class ProtectionService {
     // Start the flutter_foreground_task service (voice + shake in Dart)
     await FlutterForegroundTask.startService(
       serviceId: 256,
-      notificationTitle: 'Nari Shakti Active',
+      notificationTitle: 'Sahay Active',
       notificationText: 'Shake & voice detection running',
       callback: startCallback,
     );
@@ -215,7 +234,7 @@ class ProtectionService {
     // Start the NATIVE shake detection foreground service (works when locked)
     try {
       await _shakeChannel.invokeMethod('startShakeService');
-      print('🔔 Native ShakeDetectionForegroundService started');
+      print('ðŸ”” Native ShakeDetectionForegroundService started');
     } catch (e) {
       print('Failed to start native shake service: $e');
     }
@@ -242,9 +261,7 @@ class ProtectionService {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
             Icon(Icons.shield_outlined, color: Color(0xFFFF5722)),
@@ -262,8 +279,8 @@ class ProtectionService {
         content: const Text(
           'To enable shake & voice SOS detection, please allow background activity:\n\n'
           '1. Go to Settings\n'
-          '2. Apps > Nari Shakti\n'
-          '3. Battery saver → No restrictions\n'
+          '2. Apps > Sahay\n'
+          '3. Battery saver â†’ No restrictions\n'
           '4. Also enable "Autostart"\n\n'
           'Then reopen the app.',
           style: TextStyle(color: Colors.black54, fontSize: 14, height: 1.5),
@@ -285,8 +302,10 @@ class ProtectionService {
               ),
               elevation: 0,
             ),
-            child: const Text('Open Settings',
-                style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Open Settings',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -297,7 +316,7 @@ class ProtectionService {
     // Stop the native shake service
     try {
       await _shakeChannel.invokeMethod('stopShakeService');
-      print('🔔 Native ShakeDetectionForegroundService stopped');
+      print('ðŸ”” Native ShakeDetectionForegroundService stopped');
     } catch (e) {
       print('Failed to stop native shake service: $e');
     }

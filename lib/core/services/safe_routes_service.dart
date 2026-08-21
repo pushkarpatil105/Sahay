@@ -1,4 +1,4 @@
-import 'package:http/http.dart' as http;
+﻿import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
@@ -26,21 +26,21 @@ class SafeRoutesService {
   /// Auto-detect backend URL by testing connectivity
   /// Caches the working URL for subsequent calls
   static Future<String> getBackendUrl({bool forceRefresh = false}) async {
-    print('📍 Starting backend URL detection...');
+    print('ðŸ“ Starting backend URL detection...');
     final prefs = await SharedPreferences.getInstance();
 
     if (forceRefresh) {
-      print('♻️ Forcing backend rediscovery');
+      print('â™»ï¸ Forcing backend rediscovery');
       await clearCachedBackendUrl();
     }
 
     // Return cached URL if available and still reachable.
     if (_cachedBackendUrl != null) {
-      print('📌 Using cached backend URL: $_cachedBackendUrl');
+      print('ðŸ“Œ Using cached backend URL: $_cachedBackendUrl');
       if (await _validateBackendUrl(_cachedBackendUrl!)) {
         return _cachedBackendUrl!;
       }
-      print('♻️ Cached backend URL is stale, clearing it');
+      print('â™»ï¸ Cached backend URL is stale, clearing it');
       _cachedBackendUrl = null;
       await prefs.remove(_cacheKey);
     }
@@ -49,53 +49,53 @@ class SafeRoutesService {
     final cachedUrl = prefs.getString(_cacheKey);
 
     if (cachedUrl != null) {
-      print('📌 Loaded backend URL from cache: $cachedUrl');
+      print('ðŸ“Œ Loaded backend URL from cache: $cachedUrl');
       if (await _validateBackendUrl(cachedUrl)) {
         _cachedBackendUrl = cachedUrl;
         return cachedUrl;
       }
-      print('♻️ Stored backend URL is stale, clearing it');
+      print('â™»ï¸ Stored backend URL is stale, clearing it');
       await prefs.remove(_cacheKey);
     }
 
     // Auto-detect by trying each URL
-    print('🔍 Auto-detecting backend URL...');
+    print('ðŸ” Auto-detecting backend URL...');
     for (final url in _possibleUrls) {
-      print('  ↳ Trying: $url');
+      print('  â†³ Trying: $url');
       try {
         final response = await http
             .get(Uri.parse('$url/health'))
             .timeout(const Duration(seconds: 3));
 
         if (response.statusCode == 200) {
-          print('✅ Backend found at: $url');
+          print('âœ… Backend found at: $url');
           _cachedBackendUrl = url;
           await prefs.setString(_cacheKey, url);
           return url;
         }
       } catch (e) {
-        print('  ✗ Not reachable: $e');
+        print('  âœ— Not reachable: $e');
         continue;
       }
     }
 
-    print('⏳ Loopback addresses failed. Starting LAN subnet scan...');
+    print('â³ Loopback addresses failed. Starting LAN subnet scan...');
     // If the simple loopback checks failed, scan the local LAN subnet.
     final lanUrl = await _scanLocalSubnetForBackend();
     if (lanUrl != null) {
-      print('✅ Backend found on LAN at: $lanUrl');
+      print('âœ… Backend found on LAN at: $lanUrl');
       _cachedBackendUrl = lanUrl;
       await prefs.setString(_cacheKey, lanUrl);
       return lanUrl;
     }
 
     // If none work, throw error with helpful info
-    print('⛔ LAN scan also failed. No backend found.');
-    print('❌ Could not find backend at any of these addresses:');
+    print('â›” LAN scan also failed. No backend found.');
+    print('âŒ Could not find backend at any of these addresses:');
     for (final url in _possibleUrls) {
       print('   - $url');
     }
-    print('💡 Make sure:');
+    print('ðŸ’¡ Make sure:');
     print(
       '   1. FastAPI backend is running: python main.py or uvicorn main:app --host 0.0.0.0 --port 5050',
     );
@@ -135,7 +135,7 @@ class SafeRoutesService {
           .toList();
 
       if (addresses.isEmpty) {
-        print('⚠️ Could not determine local IPv4 address for LAN scan');
+        print('âš ï¸ Could not determine local IPv4 address for LAN scan');
         return null;
       }
 
@@ -164,9 +164,9 @@ class SafeRoutesService {
       }.toList();
 
       print(
-        '🌐 Device IPv4 candidates: ${orderedAddresses.map((address) => address.address).join(', ')}',
+        'ðŸŒ Device IPv4 candidates: ${orderedAddresses.map((address) => address.address).join(', ')}',
       );
-      print('🔎 Scanning for backend on detected subnets (port 5050)...');
+      print('ðŸ”Ž Scanning for backend on detected subnets (port 5050)...');
 
       // Scan a small subset first, then expand if needed.
       final candidateHosts = <int>{1, 2, 10, 20, 50, 100, 150, 200, 254};
@@ -180,7 +180,7 @@ class SafeRoutesService {
       };
 
       for (final subnetPrefix in subnetPrefixes) {
-        print('   ↳ Checking subnet $subnetPrefix.0/24');
+        print('   â†³ Checking subnet $subnetPrefix.0/24');
         var checked = 0;
         for (final host in orderedCandidates) {
           checked++;
@@ -191,7 +191,7 @@ class SafeRoutesService {
                 .timeout(const Duration(milliseconds: 500));
             if (response.statusCode == 200) {
               print(
-                '✅ LAN scan: Found backend at $url after checking $checked hosts',
+                'âœ… LAN scan: Found backend at $url after checking $checked hosts',
               );
               return url;
             }
@@ -200,11 +200,11 @@ class SafeRoutesService {
           }
         }
         print(
-          '⛔ Subnet $subnetPrefix checked $checked hosts, none responded with healthy backend',
+          'â›” Subnet $subnetPrefix checked $checked hosts, none responded with healthy backend',
         );
       }
     } catch (e) {
-      print('⚠️ LAN scan failed: $e');
+      print('âš ï¸ LAN scan failed: $e');
     }
 
     return null;
@@ -243,13 +243,13 @@ class SafeRoutesService {
       };
 
       print(
-        '🚀 Attempting to connect to backend at: $backendUrl$scoreRoutesEndpoint',
+        'ðŸš€ Attempting to connect to backend at: $backendUrl$scoreRoutesEndpoint',
       );
       print(
-        '📍 Route request: Origin ($originLat, $originLng) → Destination ($destLat, $destLng)',
+        'ðŸ“ Route request: Origin ($originLat, $originLng) â†’ Destination ($destLat, $destLng)',
       );
       print(
-        '⏳ Waiting for model to score routes (this may take 20-30 seconds)...',
+        'â³ Waiting for model to score routes (this may take 20-30 seconds)...',
       );
 
       final response = await http
@@ -261,7 +261,7 @@ class SafeRoutesService {
           .timeout(
             const Duration(seconds: 120),
             onTimeout: () {
-              print('⏱️ TIMEOUT: Backend not responding after 120 seconds');
+              print('â±ï¸ TIMEOUT: Backend not responding after 120 seconds');
               throw TimeoutException(
                 'Backend did not respond. Check if:\n'
                 '1. FastAPI backend is running on port 5050\n'
@@ -272,23 +272,23 @@ class SafeRoutesService {
             },
           );
 
-      print('✅ Backend response received with status: ${response.statusCode}');
+      print('âœ… Backend response received with status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         print(
-          '📊 Successfully parsed ${data['meta']['routes_scored']} scored routes',
+          'ðŸ“Š Successfully parsed ${data['meta']['routes_scored']} scored routes',
         );
         return ScoreRoutesResponse.fromJson(data);
       } else {
-        print('❌ Backend error: ${response.statusCode}');
-        print('📝 Response: ${response.body}');
+        print('âŒ Backend error: ${response.statusCode}');
+        print('ðŸ“ Response: ${response.body}');
         throw Exception(
           'Failed to score routes: ${response.statusCode} - ${response.body}',
         );
       }
     } catch (e) {
-      print('🔴 Error in scoreRoutes: $e');
+      print('ðŸ”´ Error in scoreRoutes: $e');
       throw Exception('Error scoring routes: $e');
     }
   }
@@ -297,21 +297,21 @@ class SafeRoutesService {
   static Future<bool> healthCheck() async {
     try {
       final backendUrl = await getBackendUrl();
-      print('🏥 Pinging backend at: $backendUrl/health');
+      print('ðŸ¥ Pinging backend at: $backendUrl/health');
       final response = await http
           .get(Uri.parse('$backendUrl/health'))
           .timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
-        print('✅ Backend is healthy and reachable');
+        print('âœ… Backend is healthy and reachable');
         return true;
       } else {
-        print('⚠️ Backend responded with status: ${response.statusCode}');
+        print('âš ï¸ Backend responded with status: ${response.statusCode}');
         return false;
       }
     } catch (e) {
-      print('❌ Health check failed: $e');
-      print('🔧 Troubleshooting:');
+      print('âŒ Health check failed: $e');
+      print('ðŸ”§ Troubleshooting:');
       print('   - Is FastAPI running on port 5050?');
       print('   - Is your device on the same WiFi network?');
       print('   - Machine IP: Open Command Prompt and run "ipconfig"');
@@ -320,3 +320,5 @@ class SafeRoutesService {
     }
   }
 }
+
+

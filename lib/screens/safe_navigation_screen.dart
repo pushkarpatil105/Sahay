@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -379,7 +379,7 @@ class _SafeNavigationScreenState extends State<SafeNavigationScreen> {
       final route = await _directions.getRouteBetweenCoords(origin, dest);
       if (route == null) {
         debugPrint(
-          '⚠️ DirectionsService returned null — check API key/network',
+          'âš ï¸ DirectionsService returned null â€” check API key/network',
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Could not fetch navigation steps')),
@@ -485,7 +485,7 @@ class _SafeNavigationScreenState extends State<SafeNavigationScreen> {
               );
               if (nearestDist > 40) {
                 print(
-                  '[SafeNavigation] 🚨 User deviation detected: ${nearestDist.toStringAsFixed(0)}m off route',
+                  '[SafeNavigation] ðŸš¨ User deviation detected: ${nearestDist.toStringAsFixed(0)}m off route',
                 );
 
                 // Show visual deviation alert
@@ -536,7 +536,7 @@ class _SafeNavigationScreenState extends State<SafeNavigationScreen> {
                       newSafeRoutes.routes,
                     ).first;
                     print(
-                      '[SafeNavigation] ✅ New safest route found: ${safestRoute.riskBucket} (Score: ${_formatScore(safestRoute)})',
+                      '[SafeNavigation] âœ… New safest route found: ${safestRoute.riskBucket} (Score: ${_formatScore(safestRoute)})',
                     );
 
                     // Get detailed navigation for the new safest route
@@ -594,7 +594,7 @@ class _SafeNavigationScreenState extends State<SafeNavigationScreen> {
                                         ),
                                       ),
                                       Text(
-                                        '${SafetyFactorsHelper.labelForScore(safestRoute.safetyScore)} • Score: ${_formatScore(safestRoute)}',
+                                        '${SafetyFactorsHelper.labelForScore(safestRoute.safetyScore)} â€¢ Score: ${_formatScore(safestRoute)}',
                                         style: const TextStyle(fontSize: 12),
                                       ),
                                     ],
@@ -1239,7 +1239,7 @@ class _SafeNavigationScreenState extends State<SafeNavigationScreen> {
                                                       const SizedBox(height: 6),
                                                       // Distance and duration
                                                       Text(
-                                                        '${route.durationMin.toStringAsFixed(0)} min • ${route.distanceKm.toStringAsFixed(1)} km',
+                                                        '${route.durationMin.toStringAsFixed(0)} min â€¢ ${route.distanceKm.toStringAsFixed(1)} km',
                                                         style: TextStyle(
                                                           fontSize: 13,
                                                           color:
@@ -1527,7 +1527,7 @@ class WhyThisScoreModal extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Route score • ${SafetyFactorsHelper.modalLabelForScore(route.safetyScore)}',
+                    'Route score â€¢ ${SafetyFactorsHelper.modalLabelForScore(route.safetyScore)}',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -1608,3 +1608,5 @@ class WhyThisScoreModal extends StatelessWidget {
     );
   }
 }
+
+

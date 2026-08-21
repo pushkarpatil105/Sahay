@@ -1,4 +1,4 @@
-import 'dart:math';
+﻿import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -141,3 +141,4 @@ class HeatmapTileProvider implements TileProvider {
     return Tile(_tileSize, _tileSize, Uint8List.view(byteData.buffer));
   }
 }
+

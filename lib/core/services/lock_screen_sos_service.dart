@@ -1,12 +1,12 @@
-// lib/core/services/lock_screen_sos_service.dart
+﻿// lib/core/services/lock_screen_sos_service.dart
 //
 // Uses the existing native Kotlin MethodChannel for notifications
 // instead of flutter_local_notifications (which has AGP conflicts).
-// Channel: com.narishakti.app/notifications — already set up in MainActivity.kt
+// Channel: com.sahay.app/notifications â€” already set up in MainActivity.kt
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nari_shakti/main.dart';
+import 'package:sahay/main.dart';
 import 'sos_service.dart';
 import 'sos_countdown_service.dart';
 
@@ -17,13 +17,13 @@ class LockScreenSosService {
   LockScreenSosService._internal();
 
   static const MethodChannel _channel = MethodChannel(
-    'com.narishakti.app/notifications',
+    'com.sahay.app/notifications',
   );
 
   bool _isShowing = false;
   bool get isShowing => _isShowing;
 
-  // ── Init ───────────────────────────────────────────────────────────────────
+  // â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Call once in main.dart after Firebase.initializeApp()
   Future<void> init() async {
     // Listen for SOS button tap and shake SOS sent back from native side
@@ -38,18 +38,18 @@ class LockScreenSosService {
     });
   }
 
-  // ── Handle native shake SOS detection (from ShakeDetectionForegroundService) ──
+  // â”€â”€ Handle native shake SOS detection (from ShakeDetectionForegroundService) â”€â”€
   void _onNativeShakeDetected() {
     print(
-      '🔔 Native shake SOS detected — Native UI already counted down 5s. Triggering immediate SOS background',
+      'ðŸ”” Native shake SOS detected â€” Native UI already counted down 5s. Triggering immediate SOS background',
     );
     // The native Activity already provided a 5-second lock-screen countdown.
     // So we don't start the Dart countdown again, we trigger SOS background immediately!
     SosService().triggerSOSBackground('shake').then((_) {
       // Update persistent notification
       updateNotificationText(
-        '🆘 SOS ACTIVE',
-        'Recording in progress • Tap to open app',
+        'ðŸ†˜ SOS ACTIVE',
+        'Recording in progress â€¢ Tap to open app',
       );
 
       // Navigate to the SOS Active screen directly since the timer is over
@@ -68,7 +68,7 @@ class LockScreenSosService {
     });
   }
 
-  // ── Force the app to the foreground ─────────────────────────────────────────
+  // â”€â”€ Force the app to the foreground â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> bringAppToForeground() async {
     try {
       await _channel.invokeMethod('bringAppToForeground');
@@ -78,13 +78,13 @@ class LockScreenSosService {
     }
   }
 
-  // ── Show permanent lock screen notification ────────────────────────────────
+  // â”€â”€ Show permanent lock screen notification â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> showPermanentNotification() async {
     if (_isShowing) return;
     try {
       await _channel.invokeMethod('showSosNotification', {
-        'title': 'Nari Shakti Active',
-        'body': 'Shake or voice to trigger SOS • Tap button for instant SOS',
+        'title': 'Sahay Active',
+        'body': 'Shake or voice to trigger SOS â€¢ Tap button for instant SOS',
         'ongoing': true,
         'showSosButton': true,
       });
@@ -95,7 +95,7 @@ class LockScreenSosService {
     }
   }
 
-  // ── Show countdown notification ──────────────────────────────────────────────
+  // â”€â”€ Show countdown notification â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> showCountdownNotification(int secondsLeft) async {
     try {
       await _channel.invokeMethod('showCountdownNotification', {
@@ -107,7 +107,7 @@ class LockScreenSosService {
     }
   }
 
-  // ── Update notification text ───────────────────────────────────────────────
+  // â”€â”€ Update notification text â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> updateNotificationText(String title, String body) async {
     try {
       await _channel.invokeMethod('showSosNotification', {
@@ -121,7 +121,7 @@ class LockScreenSosService {
     }
   }
 
-  // ── Cancel countdown notification only (keeps persistent notification) ──────
+  // â”€â”€ Cancel countdown notification only (keeps persistent notification) â”€â”€â”€â”€â”€â”€
   Future<void> cancelCountdownNotification() async {
     try {
       await _channel.invokeMethod('cancelCountdownNotification');
@@ -130,7 +130,7 @@ class LockScreenSosService {
     }
   }
 
-  // ── Dismiss ALL notifications (persistent + countdown) ─────────────────────
+  // â”€â”€ Dismiss ALL notifications (persistent + countdown) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> dismiss() async {
     try {
       await _channel.invokeMethod('cancelSosNotification');
@@ -141,7 +141,7 @@ class LockScreenSosService {
     }
   }
 
-  // ── Launch the native full-screen SosCountdownActivity (over lock screen)
+  // â”€â”€ Launch the native full-screen SosCountdownActivity (over lock screen)
   Future<void> launchNativeCountdown(int seconds) async {
     try {
       await _channel.invokeMethod('launchNativeSosCountdown', {
@@ -152,7 +152,7 @@ class LockScreenSosService {
     }
   }
 
-  // ── SOS button tapped ──────────────────────────────────────────────────────
+  // â”€â”€ SOS button tapped â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   void _onSosButtonTapped() {
     SosService().triggerSOSBackground('lock_screen_button');
 
@@ -166,7 +166,7 @@ class LockScreenSosService {
     }
   }
 
-  // ── Violent SOS Vibration ──────────────────────────────────────────────────
+  // â”€â”€ Violent SOS Vibration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> vibrateSOS() async {
     try {
       await _channel.invokeMethod('vibrateSOS');
@@ -175,7 +175,7 @@ class LockScreenSosService {
     }
   }
 
-  // ── SOS Double Vibration ────────────────────────────────────────────────
+  // â”€â”€ SOS Double Vibration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> vibrateSOSDouble() async {
     try {
       await _channel.invokeMethod('vibrateSOSDouble');
@@ -184,7 +184,7 @@ class LockScreenSosService {
     }
   }
 
-  // ── Warning Vibration ────────────────────────────────────────────────────
+  // â”€â”€ Warning Vibration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> vibrateSOSWarning() async {
     try {
       await _channel.invokeMethod('vibrateSOSWarning');

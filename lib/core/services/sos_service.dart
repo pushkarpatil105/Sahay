@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,11 +7,11 @@ import 'package:geolocator/geolocator.dart';
 import 'evidence_service.dart';
 import 'escalation_service.dart';
 import 'lock_screen_sos_service.dart';
-import 'package:nari_shakti/core/services/cloudinary_service.dart';
-import 'package:nari_shakti/core/services/upload_queue_service.dart';
-import 'package:nari_shakti/core/services/ble_service.dart';
-import 'package:nari_shakti/main.dart'; // for navigatorKey
-import 'package:nari_shakti/core/services/live_share_service.dart';
+import 'package:sahay/core/services/cloudinary_service.dart';
+import 'package:sahay/core/services/upload_queue_service.dart';
+import 'package:sahay/core/services/ble_service.dart';
+import 'package:sahay/main.dart'; // for navigatorKey
+import 'package:sahay/core/services/live_share_service.dart';
 
 class SosService {
   static final SosService _instance = SosService._internal();
@@ -25,7 +25,7 @@ class SosService {
   /// Public getter for the active SOS document ID
   String? get activeSosId => _activeSosId;
 
-  /// Background SOS trigger — works without BuildContext (for lock screen / foreground service)
+  /// Background SOS trigger â€” works without BuildContext (for lock screen / foreground service)
   Future<void> triggerSOSBackground(String triggeredBy) async {
     if (_isActive) return;
     _isActive = true;
@@ -59,7 +59,7 @@ class SosService {
 
       // Start 2-Minute Auto-Cancellation Safety Net
       _autoCancelTimer?.cancel();
-      print('⏱️ Starting 2-minute SOS auto-termination safety net');
+      print('â±ï¸ Starting 2-minute SOS auto-termination safety net');
       _autoCancelTimer = Timer(const Duration(minutes: 2), () {
         _executeAutoCancel(_activeSosId);
       });
@@ -285,7 +285,7 @@ class SosService {
       // Ensure Twilio escalation is cancelled!
       EscalationService().cancelSequence();
 
-      // 2. Stop evidence in background — don't await
+      // 2. Stop evidence in background â€” don't await
       EvidenceService()
           .stopEvidence()
           .then((zipPath) async {
@@ -296,7 +296,7 @@ class SosService {
                   .get();
               final email = userDoc.data()?['profile']?['email'] ?? '';
               final name = userDoc.data()?['profile']?['name'] ?? 'User';
-              // Don't auto-share — let user share manually from evidence screen
+              // Don't auto-share â€” let user share manually from evidence screen
             }
           })
           .catchError((e) => print('Evidence stop error: $e'));
@@ -310,7 +310,7 @@ class SosService {
       await FirebaseDatabase.instance.ref('live_location/$uid').remove();
       await BleService().sendCommand('VIB_STOP');
     } catch (e) {
-      print('🔴 cancelSOS ERROR: $e');
+      print('ðŸ”´ cancelSOS ERROR: $e');
       _isActive = false;
     }
   }
@@ -318,7 +318,7 @@ class SosService {
   Future<void> _executeAutoCancel(String? sosId) async {
     if (sosId == null || sosId != _activeSosId || !_isActive) return;
 
-    print('⏱️ 2-MINUTE TIMEOUT REACHED — Auto-ending SOS & Zipping Evidence');
+    print('â±ï¸ 2-MINUTE TIMEOUT REACHED â€” Auto-ending SOS & Zipping Evidence');
 
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -373,3 +373,6 @@ class SosService {
     }
   }
 }
+
+
+

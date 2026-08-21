@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -8,12 +8,12 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'package:nari_shakti/core/services/places_service.dart';
-import 'package:nari_shakti/core/services/safe_routes_service.dart';
-import 'package:nari_shakti/models/route_model.dart';
-import 'package:nari_shakti/services/demo_route_scorer.dart';
-import 'package:nari_shakti/screens/safe_navigation_screen.dart';
-import 'package:nari_shakti/utils/safety_factors_helper.dart';
+import 'package:sahay/core/services/places_service.dart';
+import 'package:sahay/core/services/safe_routes_service.dart';
+import 'package:sahay/models/route_model.dart';
+import 'package:sahay/services/demo_route_scorer.dart';
+import 'package:sahay/screens/safe_navigation_screen.dart';
+import 'package:sahay/utils/safety_factors_helper.dart';
 
 class NavigationScreen extends StatefulWidget {
   final LatLng? initialOrigin;
@@ -1195,7 +1195,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                                                 ),
                                                 const SizedBox(height: 4),
                                                 Text(
-                                                  '${(route.distanceM / 1000).toStringAsFixed(1)} km • ${(route.durationS / 60).toStringAsFixed(0)} min',
+                                                  '${(route.distanceM / 1000).toStringAsFixed(1)} km â€¢ ${(route.durationS / 60).toStringAsFixed(0)} min',
                                                   style: const TextStyle(
                                                     color: Colors.grey,
                                                   ),
@@ -1257,3 +1257,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
     );
   }
 }
+
+
+

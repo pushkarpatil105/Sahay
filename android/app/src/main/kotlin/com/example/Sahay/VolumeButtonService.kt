@@ -65,7 +65,7 @@ class VolumeButtonService : AccessibilityService() {
 
     private fun triggerSOS() {
         // Send broadcast
-        val sosIntent = Intent("com.narishakti.VOLUME_BUTTON_SOS")
+        val sosIntent = Intent("com.sahay.VOLUME_BUTTON_SOS")
         sendBroadcast(sosIntent)
 
         // Use the bridge

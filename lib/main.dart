@@ -1,4 +1,4 @@
-// lib/main.dart
+﻿// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,10 +18,10 @@ import 'screens/timer/safe_timer_screen.dart';
 import 'screens/profile/sos_history_screen.dart';
 import 'screens/profile/evidence_storage_screen.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:nari_shakti/core/services/upload_queue_service.dart';
+import 'package:sahay/core/services/upload_queue_service.dart';
 // IMPORT the service
-import 'package:nari_shakti/core/services/lock_screen_sos_service.dart';
-import 'package:nari_shakti/widgets/live_share_bubble.dart';
+import 'package:sahay/core/services/lock_screen_sos_service.dart';
+import 'package:sahay/widgets/live_share_bubble.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -32,7 +32,7 @@ void main() async {
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
-    debugPrint('⚠️ Error loading .env file: $e');
+    debugPrint('âš ï¸ Error loading .env file: $e');
   }
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return WithForegroundTask(
       child: MaterialApp(
-        title: 'Nari Shakti',
+        title: 'Sahay',
         navigatorKey:
             navigatorKey, // CRITICAL: Required to trigger SOS from background
         debugShowCheckedModeBanner: false,
@@ -95,8 +95,9 @@ class MyApp extends StatelessWidget {
           '/user_profile': (context) => const UserProfileScreen(),
           '/notifications': (context) => const NotificationsScreen(),
           '/safe_timer': (context) {
-            final args = ModalRoute.of(context)?.settings.arguments
-                as Map<String, dynamic>?;
+            final args =
+                ModalRoute.of(context)?.settings.arguments
+                    as Map<String, dynamic>?;
             final autoStart = args?['autoStart'] == true;
             return SafeTimerScreen(autoStart: autoStart);
           },

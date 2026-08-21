@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
@@ -76,7 +76,7 @@ class _SosActiveScreenState extends State<SosActiveScreen>
     _triggeredBy = args?['triggeredBy'] ?? 'manual';
     _location = args?['location'];
 
-    // 🕵️ EXTRA SAFETY: If contacts are missing from navigation, fetch them now
+    // ðŸ•µï¸ EXTRA SAFETY: If contacts are missing from navigation, fetch them now
     if (_contacts.isEmpty) {
       _fetchContactsSafely();
     } else {
@@ -105,7 +105,7 @@ class _SosActiveScreenState extends State<SosActiveScreen>
             EvidenceService().getUserName(),
           );
         }
-        print('✅ Late-fetched ${_contacts.length} contacts for active screen.');
+        print('âœ… Late-fetched ${_contacts.length} contacts for active screen.');
       }
     } catch (e) {
       print('Error late-fetching contacts: $e');
@@ -190,7 +190,7 @@ class _SosActiveScreenState extends State<SosActiveScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      '🚨 SOS ACTIVE',
+                      'ðŸš¨ SOS ACTIVE',
                       style: TextStyle(
                         color: Colors.red,
                         fontSize: 20,
@@ -315,7 +315,7 @@ class _SosActiveScreenState extends State<SosActiveScreen>
                       ),
                     ),
                     child: const Text(
-                      '🚨 DIAL 112 NOW',
+                      'ðŸš¨ DIAL 112 NOW',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -340,7 +340,7 @@ class _SosActiveScreenState extends State<SosActiveScreen>
                       ),
                     ),
                     child: const Text(
-                      'I AM SAFE — Cancel SOS',
+                      'I AM SAFE â€” Cancel SOS',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -397,3 +397,5 @@ class _StatusRow extends StatelessWidget {
     );
   }
 }
+
+

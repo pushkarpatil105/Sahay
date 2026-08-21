@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -291,7 +291,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
-                                      '${contact['phone']} • ${contact['relation']}',
+                                      '${contact['phone']} â€¢ ${contact['relation']}',
                                       style: const TextStyle(
                                         color: Colors.black45,
                                         fontSize: 13,
@@ -359,3 +359,4 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
     );
   }
 }
+

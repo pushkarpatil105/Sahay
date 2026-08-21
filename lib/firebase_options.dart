@@ -41,48 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBm6pp8C-3g4ChAoozTvbVKXSncy6jtNaI',
-    appId: '1:992789459549:web:7e40ed9c7c790aa2f793b4',
-    messagingSenderId: '992789459549',
-    projectId: 'nari-shakti-hacksagon',
-    authDomain: 'nari-shakti-hacksagon.firebaseapp.com',
-    storageBucket: 'nari-shakti-hacksagon.firebasestorage.app',
-    measurementId: 'G-EPZ7PEN2HT',
+    apiKey: 'AIzaSyD0Yf5kf4liUyTCZxFKyAjn4ddLlwpLi6Y',
+    appId: '1:581128416323:web:eba4f8c7c4794e1310f8f6',
+    messagingSenderId: '581128416323',
+    projectId: 'sahay-a312b',
+    authDomain: 'sahay-a312b.firebaseapp.com',
+    storageBucket: 'sahay-a312b.firebasestorage.app',
+    measurementId: 'G-7Z8CE9MCK8',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA9mTTfVebQDcrEfPHOc1gFUlf9ED6Jpm4',
-    appId: '1:992789459549:android:e704ee14c9bb53a6f793b4',
-    messagingSenderId: '992789459549',
-    projectId: 'nari-shakti-hacksagon',
-    storageBucket: 'nari-shakti-hacksagon.firebasestorage.app',
+    apiKey: 'AIzaSyCGW6GoO1IE3fhI4rf2WwDu0TyqXMJt6EQ',
+    appId: '1:581128416323:android:6d15570ba9275f1e10f8f6',
+    messagingSenderId: '581128416323',
+    projectId: 'sahay-a312b',
+    storageBucket: 'sahay-a312b.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDbN85Z9_HHvUtwInE8905TMJhDE6uzJOI',
     appId: '1:992789459549:ios:5a558fce0f720b6cf793b4',
     messagingSenderId: '992789459549',
     projectId: 'nari-shakti-hacksagon',
+    databaseURL: 'https://nari-shakti-hacksagon-default-rtdb.firebaseio.com',
     storageBucket: 'nari-shakti-hacksagon.firebasestorage.app',
     iosBundleId: 'com.example.nariShakti',
   );
-
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDbN85Z9_HHvUtwInE8905TMJhDE6uzJOI',
     appId: '1:992789459549:ios:5a558fce0f720b6cf793b4',
     messagingSenderId: '992789459549',
     projectId: 'nari-shakti-hacksagon',
+    databaseURL: 'https://nari-shakti-hacksagon-default-rtdb.firebaseio.com',
     storageBucket: 'nari-shakti-hacksagon.firebasestorage.app',
     iosBundleId: 'com.example.nariShakti',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyBm6pp8C-3g4ChAoozTvbVKXSncy6jtNaI',
-    appId: '1:992789459549:web:fcaae4e68f980bd2f793b4',
+    appId: '1:992789459549:web:508cd1676c065e5df793b4',
     messagingSenderId: '992789459549',
     projectId: 'nari-shakti-hacksagon',
     authDomain: 'nari-shakti-hacksagon.firebaseapp.com',
+    databaseURL: 'https://nari-shakti-hacksagon-default-rtdb.firebaseio.com',
     storageBucket: 'nari-shakti-hacksagon.firebasestorage.app',
-    measurementId: 'G-DLHTWFRD9J',
+    measurementId: 'G-Q54VWBRSRQ',
   );
 }

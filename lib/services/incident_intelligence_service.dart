@@ -1,4 +1,4 @@
-/// Incident Intelligence Service
+﻿/// Incident Intelligence Service
 /// Fetches and manages real-time crime incident data for route analysis
 /// Integrates with backend Incident Intelligence engine
 
@@ -196,3 +196,5 @@ extension IncidentDataExtension on SafeRoute {
   /// Additional data placeholder for forward compatibility
   Map<String, dynamic>? get extraData => null;
 }
+
+

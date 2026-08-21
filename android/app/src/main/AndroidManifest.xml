@@ -27,7 +27,7 @@
 <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"/>
 
     <application
-        android:label="nari_shakti"
+        android:label="Sahay"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <service
@@ -100,7 +100,7 @@
             android:name=".SosReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.narishakti.TRIGGER_SOS" />
+                <action android:name="com.sahay.TRIGGER_SOS" />
             </intent-filter>
         </receiver>
 

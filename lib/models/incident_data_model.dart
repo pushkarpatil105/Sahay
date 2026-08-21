@@ -1,4 +1,4 @@
-
+﻿
 class IncidentAnalytics {
   /// Total incidents detected along the route corridor
   final int incidentCount;
@@ -216,3 +216,5 @@ class IncidentCluster {
     return 'LOW';
   }
 }
+
+

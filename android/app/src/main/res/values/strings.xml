@@ -3,7 +3,7 @@
     <string name="app_name">Sahay</string>
 
     <!-- Accessibility Service -->
-    <string name="accessibility_service_description">Nari Shakti uses this service to detect rapid volume button presses for emergency SOS activation. No screen content is accessed.</string>
+    <string name="accessibility_service_description">Sahay uses this service to detect rapid volume button presses for emergency SOS activation. No screen content is accessed.</string>
 
     <!-- Google Assistant Shortcuts -->
     <string name="shortcut_help">Help me</string>

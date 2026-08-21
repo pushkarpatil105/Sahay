@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,7 +18,7 @@ import '../../core/services/protection_service.dart';
 import '../../core/services/upload_queue_service.dart';
 import '../../core/services/upload_status.dart';
 import '../../widgets/ble_connect_sheet.dart';
-import 'package:nari_shakti/main.dart';
+import 'package:sahay/main.dart';
 import 'dart:async';
 
 class HomeScreen extends StatefulWidget {
@@ -81,9 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // HOME PAGE
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _HomePage extends StatefulWidget {
   const _HomePage();
@@ -506,9 +506,9 @@ class _HomePageState extends State<_HomePage> with TickerProviderStateMixin {
                     title: 'Hands-Free SOS Triggers',
                     content:
                         'You can trigger an SOS without unlocking your phone in 3 ways:\n\n'
-                        '🗣️ Voice Action: Say "bachao" or "help me" anywhere (Make sure Microphone permission is active).\n'
-                        '📳 Shake Action: Shake your phone vigorously.\n'
-                        '🔊 Volume Buttons: Press the "Volume Down" button 5 times rapidly.',
+                        'ðŸ—£ï¸ Voice Action: Say "bachao" or "help me" anywhere (Make sure Microphone permission is active).\n'
+                        'ðŸ“³ Shake Action: Shake your phone vigorously.\n'
+                        'ðŸ”Š Volume Buttons: Press the "Volume Down" button 5 times rapidly.',
                     color: Colors.orange,
                   ),
                   _TipSection(
@@ -524,7 +524,7 @@ class _HomePageState extends State<_HomePage> with TickerProviderStateMixin {
                     title: '112 Emergency Escalation',
                     content:
                         'When an SOS triggers, your contacts get an SMS immediately. '
-                        'If you don\'t cancel the SOS within 30 seconds, Nari Shakti will use its severe Cloud APIs to automatically mass dial you emergency contacts with an urgent voice message!\n\n'
+                        'If you don\'t cancel the SOS within 30 seconds, Sahay will use its severe Cloud APIs to automatically mass dial you emergency contacts with an urgent voice message!\n\n'
                         'Hackathon Bonus: Your emergency contacts can also tap a link in your SMS to securely command your phone to dial 112!',
                     color: Colors.red,
                   ),
@@ -532,9 +532,9 @@ class _HomePageState extends State<_HomePage> with TickerProviderStateMixin {
                     icon: Icons.verified_user_outlined,
                     title: 'Why We Need Permissions',
                     content:
-                        '• Location (Always): Needed to send live tracking loops to your family when SOS triggers.\n'
-                        '• Microphone: Needed exclusively for the offline Picovoice ML model to detect your wake word.\n'
-                        '• Camera: Used instantly during an SOS to grab visual evidence of your surroundings.',
+                        'â€¢ Location (Always): Needed to send live tracking loops to your family when SOS triggers.\n'
+                        'â€¢ Microphone: Needed exclusively for the offline Picovoice ML model to detect your wake word.\n'
+                        'â€¢ Camera: Used instantly during an SOS to grab visual evidence of your surroundings.',
                     color: Colors.green,
                   ),
                   const SizedBox(height: 40),
@@ -1208,9 +1208,9 @@ class _HomePageState extends State<_HomePage> with TickerProviderStateMixin {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // PROFILE PAGE
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _ProfilePage extends StatefulWidget {
   const _ProfilePage();
@@ -1535,9 +1535,9 @@ class _ProfilePageState extends State<_ProfilePage> {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // SHARED WIDGETS
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _SectionLabel extends StatelessWidget {
   final String label;

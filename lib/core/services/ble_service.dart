@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -6,9 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:nari_shakti/core/services/sos_service.dart';
-import 'package:nari_shakti/core/services/lock_screen_sos_service.dart';
-import 'package:nari_shakti/main.dart';
+import 'package:sahay/core/services/sos_service.dart';
+import 'package:sahay/core/services/lock_screen_sos_service.dart';
+import 'package:sahay/main.dart';
 
 enum BleStatus {
   idle,
@@ -317,7 +317,7 @@ class BleService {
             }
 
             if (normalized == 'SOS_FROM_BUTTON') {
-              // Button press → open Safe Timer with auto-start
+              // Button press â†’ open Safe Timer with auto-start
               if (navigatorKey.currentState != null) {
                 navigatorKey.currentState!.pushNamed(
                   '/safe_timer',
@@ -428,6 +428,8 @@ class BleService {
     final advName = result.advertisementData.advName.toLowerCase();
     final remoteId = result.device.remoteId.str;
     final matchesName =
+        name.contains('sahay') ||
+        advName.contains('sahay') ||
         name.contains('narishakti') ||
         advName.contains('narishakti') ||
         name.contains('nari') ||

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,22 +8,22 @@ import 'dart:convert';
 import 'dart:math' show cos, sqrt, atan2, sin, pi, asin;
 import 'dart:async';
 import 'package:flutter/services.dart'; // for MethodChannel
-import 'package:nari_shakti/core/services/heatmap_tile_provider.dart';
-import 'package:nari_shakti/core/services/api_key_service.dart';
-import 'package:nari_shakti/screens/navigation_screen.dart';
+import 'package:sahay/core/services/heatmap_tile_provider.dart';
+import 'package:sahay/core/services/api_key_service.dart';
+import 'package:sahay/screens/navigation_screen.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  SafetyMapScreen  — UPDATED
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  SafetyMapScreen  â€” UPDATED
 //  Changes vs previous version:
-//    ✅ Bright / light map style (replaces dark theme)
-//    ✅ Hospital route now drawn IN-APP via Directions API (green polyline)
-//        — url_launcher / Google Maps redirect removed entirely
-//    ✅ Police route still drawn IN-APP via Directions API (blue polyline)
-//    ✅ Both POI cards + action-sheet buttons trigger the in-app route
-//    ✅ Separate _isRoutingToHospital loading flag
-//    ✅ _polylines now keyed so police + hospital routes can coexist
-//    ✅ No other files touched
-// ─────────────────────────────────────────────────────────────────────────────
+//    âœ… Bright / light map style (replaces dark theme)
+//    âœ… Hospital route now drawn IN-APP via Directions API (green polyline)
+//        â€” url_launcher / Google Maps redirect removed entirely
+//    âœ… Police route still drawn IN-APP via Directions API (blue polyline)
+//    âœ… Both POI cards + action-sheet buttons trigger the in-app route
+//    âœ… Separate _isRoutingToHospital loading flag
+//    âœ… _polylines now keyed so police + hospital routes can coexist
+//    âœ… No other files touched
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class SafetyMapScreen extends StatefulWidget {
   const SafetyMapScreen({super.key});
@@ -33,7 +33,7 @@ class SafetyMapScreen extends StatefulWidget {
 }
 
 class _SafetyMapScreenState extends State<SafetyMapScreen> {
-  // ── Controllers & State ──────────────────────────────────────────────────
+  // â”€â”€ Controllers & State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   GoogleMapController? _mapController;
   StreamSubscription<Position>? _positionStream;
   Position? _currentPosition;
@@ -41,7 +41,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
   DateTime? _lastGeofenceCheck;
   LatLng? _lastCheckedPosition;
 
-  // ── Camera animation debouncing to prevent zoom glitching ──
+  // â”€â”€ Camera animation debouncing to prevent zoom glitching â”€â”€
   DateTime? _lastCameraUpdate;
   static const _cameraUpdateDebounce = Duration(milliseconds: 500);
 
@@ -49,7 +49,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
   final Set<Circle> _circles = {};
   final Set<Polyline> _polylines = {};
 
-  // ── Live location sharing ───────────────────────────────────────────────
+  // â”€â”€ Live location sharing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   bool _isSharingLive = false;
   Timer? _liveShareTimer;
   String? _liveShareDocId;
@@ -74,15 +74,13 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
   Map<String, dynamic>? _nearestHospital;
   List<Map<String, dynamic>> _activeDangerZones = [];
 
-  static const _notifChannel = MethodChannel(
-    'com.narishakti.app/notifications',
-  );
+  static const _notifChannel = MethodChannel('com.sahay.app/notifications');
 
-  // ── Heatmap state ───────────────────────────────────────────────
+  // â”€â”€ Heatmap state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   TileOverlay? _heatmapOverlay;
   bool _showHeatmap = true;
 
-  // ── Lifecycle ────────────────────────────────────────────────────────────
+  // â”€â”€ Lifecycle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   @override
   void initState() {
     super.initState();
@@ -99,7 +97,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     super.dispose();
   }
 
-  // ── Location ─────────────────────────────────────────────────────────────
+  // â”€â”€ Location â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> _getCurrentLocation() async {
     if (mounted) setState(() => _isLoading = true);
 
@@ -129,7 +127,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
         return;
       }
 
-      // ── Step 1: Get one fast fix first (so map loads immediately) ──
+      // â”€â”€ Step 1: Get one fast fix first (so map loads immediately) â”€â”€
       final quickPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.medium,
       ).timeout(const Duration(seconds: 30));
@@ -137,7 +135,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
       if (!mounted) return;
       _onPositionUpdate(quickPosition, initial: true);
 
-      // ── Step 2: Start continuous stream for live tracking ──
+      // â”€â”€ Step 2: Start continuous stream for live tracking â”€â”€
       await _positionStream?.cancel();
       _positionStream =
           Geolocator.getPositionStream(
@@ -152,7 +150,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             },
           );
 
-      // ── Step 3: Start periodic heading updates ──
+      // â”€â”€ Step 3: Start periodic heading updates â”€â”€
       _startHeadingUpdate();
     } catch (e) {
       debugPrint('[Location] Error: $e');
@@ -161,7 +159,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     }
   }
 
-  // ── Heading Update (using device compass/sensors) ────────────────────────
+  // â”€â”€ Heading Update (using device compass/sensors) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Timer? _headingUpdateTimer;
 
   void _startHeadingUpdate() {
@@ -178,7 +176,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     });
   }
 
-  // ── Live share control ─────────────────────────────────────────────────
+  // â”€â”€ Live share control â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> _startLiveShare() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null || _currentPosition == null) {
@@ -285,7 +283,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
 
   void _showDangerNotification(String reason) {
     _showSnack(
-      '⚠️ Danger Zone! ${_labelForReason(reason)} reported here. be Alert,be Safe!',
+      'âš ï¸ Danger Zone! ${_labelForReason(reason)} reported here. be Alert,be Safe!',
       Colors.red.shade700,
     );
   }
@@ -294,7 +292,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     if (mounted) setState(() => _isLoading = false);
   }
 
-  // ── Debounced camera animation to prevent zoom glitching ──
+  // â”€â”€ Debounced camera animation to prevent zoom glitching â”€â”€
   void _animateCameraDebounced(CameraUpdate update) {
     final now = DateTime.now();
     if (_lastCameraUpdate != null &&
@@ -324,13 +322,13 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
           15,
         ),
       );
-      _updateCurrentLocationMarker(); // ← Add blue dot marker
+      _updateCurrentLocationMarker(); // â† Add blue dot marker
       Future.wait([_loadUnsafeReports(), _findNearbyPlaces(position)]);
     } else {
-      _updateCurrentLocationMarker(); // ← Update marker on every position change
+      _updateCurrentLocationMarker(); // â† Update marker on every position change
     }
 
-    // ── If user is sharing live location, update the Firestore doc with new coords
+    // â”€â”€ If user is sharing live location, update the Firestore doc with new coords
     if (_isSharingLive) {
       if (_liveShareExpiresAt != null &&
           DateTime.now().isAfter(_liveShareExpiresAt!)) {
@@ -354,7 +352,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
       }
     }
 
-    // ── Throttle geofence check ──
+    // â”€â”€ Throttle geofence check â”€â”€
     final now = DateTime.now();
     final newLatLng = LatLng(position.latitude, position.longitude);
 
@@ -381,7 +379,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     if (_isNavigating) _updateNavigationStep(position);
   }
 
-  // ── Update current location marker with heading ──────────────────────────
+  // â”€â”€ Update current location marker with heading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   void _updateCurrentLocationMarker() {
     if (_currentPosition == null) return;
 
@@ -440,7 +438,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              '⚠️ ${_labelForReason(reason)}',
+              'âš ï¸ ${_labelForReason(reason)}',
               style: const TextStyle(
                 color: Colors.black87,
                 fontSize: 18,
@@ -449,11 +447,11 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              '$totalUpvotes confirmations · expires in ${hoursLeft}h',
+              '$totalUpvotes confirmations Â· expires in ${hoursLeft}h',
               style: const TextStyle(color: Colors.black45, fontSize: 13),
             ),
             const SizedBox(height: 20),
-            // Confirm button — upvotes the most recent report in cluster
+            // Confirm button â€” upvotes the most recent report in cluster
             SizedBox(
               width: double.infinity,
               height: 48,
@@ -511,7 +509,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
           _showDangerAlert(zone['reason'] as String);
         }
       } else {
-        // User left the zone — remove from alerted so they get warned if they re-enter
+        // User left the zone â€” remove from alerted so they get warned if they re-enter
         _alertedZones.remove(zoneId);
       }
     }
@@ -532,7 +530,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  '⚠️ ${_labelForReason(reason)} yahan report hua hai. Savdhan raho!',
+                  'âš ï¸ ${_labelForReason(reason)} yahan report hua hai. Savdhan raho!',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -553,12 +551,12 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
 
     // Real phone notification via MethodChannel
     _notifChannel.invokeMethod('showDangerNotification', {
-      'title': '⚠️ Danger Zone Alert',
+      'title': 'âš ï¸ Danger Zone Alert',
       'message': '${_labelForReason(reason)} nearby. Savdhan raho!',
     });
   }
 
-  // ── Fetch Both POIs in Parallel ──────────────────────────────────────────
+  // â”€â”€ Fetch Both POIs in Parallel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> _findNearbyPlaces(Position position) async {
     await Future.wait([
       _findNearestPlace(position, type: 'police'),
@@ -598,7 +596,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
       if (results == null || results.isEmpty) return;
       if (!mounted) return;
 
-      // ── Calculate distances and find actual nearest ───────────────────────
+      // â”€â”€ Calculate distances and find actual nearest â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       double? minDistance;
       Map<String, dynamic>? nearestPlace;
       int nearestIndex = -1;
@@ -657,9 +655,9 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
               name: name,
               lat: pLat,
               lng: pLng,
-              emoji: type == 'police' ? '🚔' : '🏥',
+              emoji: type == 'police' ? 'ðŸš”' : 'ðŸ¥',
               snippet: isNearest
-                  ? 'Nearest ${type == 'police' ? 'Police Station' : 'Hospital'} — tap for route'
+                  ? 'Nearest ${type == 'police' ? 'Police Station' : 'Hospital'} â€” tap for route'
                   : 'Tap for directions',
               hue: type == 'police'
                   ? BitmapDescriptor.hueBlue
@@ -698,7 +696,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     );
   }
 
-  // ── Generic Directions API helper ─────────────────────────────────────────
+  // â”€â”€ Generic Directions API helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   /// Fetches a driving route from current position to [destLat],[destLng],
   /// draws a polyline with [color] identified by [polylineKey], then fits
   /// the camera to the bounds of the route.
@@ -783,11 +781,11 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
         return;
       }
 
-      // ── Extract polyline ──
+      // â”€â”€ Extract polyline â”€â”€
       final points = data['routes'][0]['overview_polyline']['points'] as String;
       final decoded = _decodePolyline(points);
 
-      // ── Extract steps ──
+      // â”€â”€ Extract steps â”€â”€
       final legs = data['routes'][0]['legs'][0];
       final steps = legs['steps'] as List;
 
@@ -841,7 +839,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     }
   }
 
-  // ── Strip HTML tags from Directions API instructions ─────────────────────
+  // â”€â”€ Strip HTML tags from Directions API instructions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   String _stripHtml(String html) {
     return html
         .replaceAll(RegExp(r'<[^>]*>'), ' ')
@@ -851,7 +849,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
         .trim();
   }
 
-  // ── Calculate distance between two coordinates using Haversine formula ────
+  // â”€â”€ Calculate distance between two coordinates using Haversine formula â”€â”€â”€â”€
   double _calculateDistance(
     double lat1,
     double lng1,
@@ -871,7 +869,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     return earthRadiusMeters * c;
   }
 
-  // ── Stop navigation ───────────────────────────────────────────────────────
+  // â”€â”€ Stop navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   void _stopNavigation() {
     setState(() {
       _isNavigating = false;
@@ -884,7 +882,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     });
   }
 
-  // ── Update step as user moves (call this from _onPositionUpdate) ──────────
+  // â”€â”€ Update step as user moves (call this from _onPositionUpdate) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Add this line inside _onPositionUpdate():
   //   if (_isNavigating) _updateNavigationStep(position);
   void _updateNavigationStep(Position position) {
@@ -892,7 +890,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     if (_currentStepIndex >= _routeSteps.length) {
       // Reached destination
       _stopNavigation();
-      _showSnack('🎯 Destination par pahunch gaye!', Colors.green);
+      _showSnack('ðŸŽ¯ Destination par pahunch gaye!', Colors.green);
       return;
     }
 
@@ -908,7 +906,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
       stepLng,
     );
 
-    // If within 30m of step endpoint → advance to next step
+    // If within 30m of step endpoint â†’ advance to next step
     if (distToStep < 30) {
       final nextIndex = _currentStepIndex + 1;
       if (nextIndex < _routeSteps.length) {
@@ -920,7 +918,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
       } else {
         // Last step done
         _stopNavigation();
-        _showSnack('🎯 Destination par pahunch gaye!', Colors.green);
+        _showSnack('ðŸŽ¯ Destination par pahunch gaye!', Colors.green);
       }
     } else {
       // Update remaining distance for current step dynamically
@@ -940,7 +938,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     );
   }
 
-  // ── Load Firestore Reports ────────────────────────────────────────────────
+  // â”€â”€ Load Firestore Reports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> _loadUnsafeReports() async {
     try {
       final now = DateTime.now();
@@ -982,8 +980,8 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             markerId: MarkerId('report_${doc.id}'),
             position: LatLng(lat, lng),
             infoWindow: InfoWindow(
-              title: '⚠️ ${_labelForReason(reason)}',
-              snippet: '$upvotes confirmations · expires in ${hoursLeft}h',
+              title: 'âš ï¸ ${_labelForReason(reason)}',
+              snippet: '$upvotes confirmations Â· expires in ${hoursLeft}h',
             ),
             icon: BitmapDescriptor.defaultMarkerWithHue(_hueForReason(reason)),
             onTap: () => _showReportDetails(doc.id, data),
@@ -1047,7 +1045,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     });
   }
 
-  // ── Submit Report ─────────────────────────────────────────────────────────
+  // â”€â”€ Submit Report â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> _submitReport(String reason) async {
     if (_currentPosition == null) return;
     if (mounted) setState(() => _isReporting = true);
@@ -1067,7 +1065,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
         'active': true,
       });
       _showSnack(
-        '✅ Report submit ho gaya! 24 ghante tak visible rahega.',
+        'âœ… Report submit ho gaya! 24 ghante tak visible rahega.',
         const Color(0xFF2E7D32),
       );
       await _loadUnsafeReports();
@@ -1078,7 +1076,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     }
   }
 
-  // ── Upvote Report ─────────────────────────────────────────────────────────
+  // â”€â”€ Upvote Report â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> _upvoteReport(String docId, String uid) async {
     try {
       await FirebaseFirestore.instance
@@ -1094,7 +1092,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     }
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Color _colorForReason(String r) {
     switch (r) {
       case 'harassment':
@@ -1213,7 +1211,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
         title: const Text('Location Permission'),
         content: const Text(
           'Location permission permanently deny ho gayi.\n\n'
-          'Settings → Apps → [Is App] → Permissions → Location → "Allow only while using" select karo.',
+          'Settings â†’ Apps â†’ [Is App] â†’ Permissions â†’ Location â†’ "Allow only while using" select karo.',
         ),
         actions: [
           TextButton(
@@ -1238,7 +1236,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     );
   }
 
-  // ── Bottom Sheets ─────────────────────────────────────────────────────────
+  // â”€â”€ Bottom Sheets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   void _showReportDialog() {
     if (_currentPosition == null) {
       _showSnack('Pehle location lo.', Colors.orange);
@@ -1276,7 +1274,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
               ),
               const SizedBox(height: 16),
               const Text(
-                '📍 Report Unsafe Location',
+                'ðŸ“ Report Unsafe Location',
                 style: TextStyle(
                   color: Colors.black87,
                   fontSize: 18,
@@ -1298,27 +1296,27 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
                 spacing: 8,
                 children: [
                   _ReasonChip(
-                    label: '😟 Harassment',
+                    label: 'ðŸ˜Ÿ Harassment',
                     value: 'harassment',
                     selected: selectedReason == 'harassment',
                     onTap: () =>
                         setSheetState(() => selectedReason = 'harassment'),
                   ),
                   _ReasonChip(
-                    label: '💰 Theft',
+                    label: 'ðŸ’° Theft',
                     value: 'theft',
                     selected: selectedReason == 'theft',
                     onTap: () => setSheetState(() => selectedReason = 'theft'),
                   ),
                   _ReasonChip(
-                    label: '🌑 Poor Lighting',
+                    label: 'ðŸŒ‘ Poor Lighting',
                     value: 'poor_lighting',
                     selected: selectedReason == 'poor_lighting',
                     onTap: () =>
                         setSheetState(() => selectedReason = 'poor_lighting'),
                   ),
                   _ReasonChip(
-                    label: '⚠️ Other',
+                    label: 'âš ï¸ Other',
                     value: 'other',
                     selected: selectedReason == 'other',
                     onTap: () => setSheetState(() => selectedReason = 'other'),
@@ -1403,7 +1401,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              '⚠️ ${_labelForReason(reason)}',
+              'âš ï¸ ${_labelForReason(reason)}',
               style: const TextStyle(
                 color: Colors.black87,
                 fontSize: 18,
@@ -1412,7 +1410,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              '$upvotes logon ne confirm kiya  •  expires in ${hoursLeft}h',
+              '$upvotes logon ne confirm kiya  â€¢  expires in ${hoursLeft}h',
               style: const TextStyle(color: Colors.black54, fontSize: 13),
             ),
             const SizedBox(height: 20),
@@ -1451,7 +1449,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     );
   }
 
-  // ── POI Action Sheet — both now trigger in-app route ──────────────────────
+  // â”€â”€ POI Action Sheet â€” both now trigger in-app route â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   void _showPoiActionSheet({
     required bool isPolice,
     double? lat,
@@ -1489,7 +1487,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              '${isPolice ? '🚔' : '🏥'}  $poiName',
+              '${isPolice ? 'ðŸš”' : 'ðŸ¥'}  $poiName',
               style: const TextStyle(
                 color: Colors.black87,
                 fontSize: 17,
@@ -1568,7 +1566,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     );
   }
 
-  // ── Build ─────────────────────────────────────────────────────────────────
+  // â”€â”€ Build â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1595,7 +1593,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
                   border: Border.all(color: Colors.blue.shade200),
                 ),
                 child: Text(
-                  '↑ ${_currentHeading.toStringAsFixed(0)}°',
+                  'â†‘ ${_currentHeading.toStringAsFixed(0)}Â°',
                   style: TextStyle(
                     color: Colors.blue.shade700,
                     fontSize: 11,
@@ -1646,7 +1644,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
       ),
       body: Stack(
         children: [
-          // ── Map ──
+          // â”€â”€ Map â”€â”€
           if (_isLoading)
             const Center(
               child: CircularProgressIndicator(color: Color(0xFFD32F2F)),
@@ -1657,7 +1655,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             GoogleMap(
               onMapCreated: (c) {
                 _mapController = c;
-                // ── BRIGHT MAP STYLE ──
+                // â”€â”€ BRIGHT MAP STYLE â”€â”€
                 _mapController?.setMapStyle(_brightMapStyle);
                 if (_currentPosition != null) {
                   _mapController?.animateCamera(
@@ -1687,7 +1685,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
               tileOverlays: {if (_heatmapOverlay != null) _heatmapOverlay!},
             ),
 
-          // ── Legend ──
+          // â”€â”€ Legend â”€â”€
           if (_currentPosition != null)
             Positioned(
               top: 12,
@@ -1711,13 +1709,16 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _LegendItem(color: Colors.blue, label: '📍 Your Location'),
+                    _LegendItem(
+                      color: Colors.blue,
+                      label: 'ðŸ“ Your Location',
+                    ),
                     const SizedBox(height: 5),
-                    _LegendItem(color: Colors.blue, label: '🚔 Police'),
+                    _LegendItem(color: Colors.blue, label: 'ðŸš” Police'),
                     const SizedBox(height: 5),
-                    _LegendItem(color: Colors.green, label: '🏥 Hospital'),
+                    _LegendItem(color: Colors.green, label: 'ðŸ¥ Hospital'),
                     const SizedBox(height: 5),
-                    _LegendItem(color: Colors.red, label: '⚠️ Report Pins'),
+                    _LegendItem(color: Colors.red, label: 'âš ï¸ Report Pins'),
                   ],
                 ),
               ),
@@ -1747,7 +1748,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
               ),
             ),
 
-          // ── Heatmap Toggle Button ──
+          // â”€â”€ Heatmap Toggle Button â”€â”€
           Positioned(
             top: 120,
             right: 12,
@@ -1769,7 +1770,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             ),
           ),
 
-          // ── Live sharing status widget ──
+          // â”€â”€ Live sharing status widget â”€â”€
           if (_isSharingLive)
             Positioned(
               bottom: 100,
@@ -1833,7 +1834,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
 
           if (_isNavigating) _buildNavigationPanel(),
 
-          // ── Report Button + POI quick-action strip (Report above) ──
+          // â”€â”€ Report Button + POI quick-action strip (Report above) â”€â”€
           if (_currentPosition != null && !_isNavigating)
             Positioned(
               bottom: 24,
@@ -1926,7 +1927,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ── Handle bar ──
+            // â”€â”€ Handle bar â”€â”€
             const SizedBox(height: 10),
             Container(
               width: 40,
@@ -1938,7 +1939,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             ),
             const SizedBox(height: 12),
 
-            // ── Destination name ──
+            // â”€â”€ Destination name â”€â”€
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -1998,7 +1999,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             const Divider(height: 1),
             const SizedBox(height: 14),
 
-            // ── Current step instruction ──
+            // â”€â”€ Current step instruction â”€â”€
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -2062,7 +2063,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
     );
   }
 
-  // ── Icon based on instruction keyword ────────────────────────────────────
+  // â”€â”€ Icon based on instruction keyword â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   IconData _getTurnIcon(String instruction) {
     final lower = instruction.toLowerCase();
     if (lower.contains('left')) return Icons.turn_left;
@@ -2115,9 +2116,9 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //  Sub-widgets (unchanged except color tweaks for light theme)
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _ReasonChip extends StatelessWidget {
   final String label, value;
@@ -2248,10 +2249,10 @@ class _PoiCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //  Bright / Light map style  (replaces the previous dark style)
 //  Roads are white/light-grey, water is light blue, parks are light green.
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const String _brightMapStyle = '''
 [
   {"elementType": "geometry",           "stylers": [{"color": "#f5f5f5"}]},

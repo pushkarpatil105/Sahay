@@ -99,7 +99,7 @@ class VolumeButtonAccessibilityService : AccessibilityService() {
             android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notificationBuilder = androidx.core.app.NotificationCompat.Builder(this, "com.narishakti.app/shake_service")
+        val notificationBuilder = androidx.core.app.NotificationCompat.Builder(this, "com.sahay.app/shake_service")
             .setSmallIcon(android.R.drawable.ic_dialog_alert)
             .setContentTitle("SOS Triggered")
             .setContentText("Hardware Volume Trigger matched!")

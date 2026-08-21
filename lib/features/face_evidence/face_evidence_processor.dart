@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
@@ -34,7 +34,7 @@ class FaceEvidenceProcessor {
       final tempDir = await getTemporaryDirectory();
       final frameFiles = <File>[];
 
-      // Extract frame at every second — loop up to max chunk duration (10s) + buffer
+      // Extract frame at every second â€” loop up to max chunk duration (10s) + buffer
       // VideoRecordingService creates 10s chunks, so this covers full chunk
       // Last chunk may be shorter, so we try up to 15 seconds to be safe
       var consecutiveNulls = 0;
@@ -285,3 +285,5 @@ class _IdentityMatchResult {
     required this.isNewIdentity,
   });
 }
+
+

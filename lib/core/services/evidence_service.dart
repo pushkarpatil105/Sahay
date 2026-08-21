@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import 'package:geolocator/geolocator.dart';
@@ -25,7 +25,7 @@ class EvidenceService {
   final List<Map<String, dynamic>> _locationLog = [];
   bool _isLoggingLocation = false;
 
-  // Contacts to notify when evidence is ready — set by SosService
+  // Contacts to notify when evidence is ready â€” set by SosService
   List<Map<String, dynamic>> _emergencyContacts = [];
   String _userName = 'User';
   Position? _lastPosition;
@@ -44,7 +44,7 @@ class EvidenceService {
   String getUserName() => _userName;
   Position? getLastPosition() => _lastPosition;
 
-  // ── Start evidence ─────────────────────────────────────────────────────────
+  // â”€â”€ Start evidence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> startEvidence(String sosId, Position position) async {
     _currentSosId = sosId;
@@ -121,9 +121,9 @@ class EvidenceService {
   }
 
   // Called automatically when 5 min recording limit is hit
-  // User never needed to press Im Safe — evidence is already uploading
+  // User never needed to press Im Safe â€” evidence is already uploading
   void _onMaxDurationReached() {
-    print('Auto-stop triggered — saving and queuing evidence');
+    print('Auto-stop triggered â€” saving and queuing evidence');
     stopEvidence()
         .then((_) {
           // Send follow-up SMS with cloud evidence links
@@ -134,7 +134,7 @@ class EvidenceService {
         });
   }
 
-  // ── Stop evidence ──────────────────────────────────────────────────────────
+  // â”€â”€ Stop evidence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<String?> stopEvidence() async {
     if (_currentEvidenceDir == null) {
@@ -146,7 +146,7 @@ class EvidenceService {
 
     _isLoggingLocation = false;
 
-    // Stop recording — final chunk saved and uploaded
+    // Stop recording â€” final chunk saved and uploaded
     await VideoRecordingService().stopRecording();
     print('Video recording stopped');
 
@@ -184,14 +184,14 @@ class EvidenceService {
       return;
     }
 
-    String message = 'EVIDENCE UPDATE — $_userName SOS Evidence:\n';
+    String message = 'EVIDENCE UPDATE â€” $_userName SOS Evidence:\n';
     message += 'Video chunks uploaded to cloud:\n';
     for (int i = 0; i < uploadedUrls.length; i++) {
       message += 'Clip ${i + 1}: ${uploadedUrls[i]}\n';
     }
     message += 'Time: ${DateTime.now().toString().substring(0, 16)}';
 
-    const platform = MethodChannel('com.narishakti.app/sms');
+    const platform = MethodChannel('com.sahay.app/sms');
 
     for (final contact in _emergencyContacts) {
       final phone = contact['phone'] as String?;
@@ -208,7 +208,7 @@ class EvidenceService {
     }
   }
 
-  // ── Location ───────────────────────────────────────────────────────────────
+  // â”€â”€ Location â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   void _logLocation(Position position) {
     _locationLog.add({
@@ -243,7 +243,7 @@ class EvidenceService {
     return camera.isGranted && mic.isGranted;
   }
 
-  // ── Audio ──────────────────────────────────────────────────────────────────
+  // â”€â”€ Audio â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> _startAudioRecording() async {
     try {
@@ -269,7 +269,7 @@ class EvidenceService {
     } catch (e) {}
   }
 
-  // ── ZIP ────────────────────────────────────────────────────────────────────
+  // â”€â”€ ZIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> _saveLocationLog() async {
     if (_currentEvidenceDir == null) return;
@@ -306,7 +306,7 @@ class EvidenceService {
     }
   }
 
-  // ── Firestore metadata ─────────────────────────────────────────────────────
+  // â”€â”€ Firestore metadata â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<String?> saveEvidenceMetadata(String? zipPath, String? zipUrl) async {
     try {
@@ -344,7 +344,7 @@ class EvidenceService {
     }
   }
 
-  // ── SMS ────────────────────────────────────────────────────────────────────
+  // â”€â”€ SMS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> sendSmsToContacts(
     List<Map<String, dynamic>> contacts,
@@ -359,7 +359,7 @@ class EvidenceService {
 
     // Prefer live share link when available, otherwise fallback to static maps link
     if (liveShareUrl != null) {
-      message += '📍 Live Location (24 hrs):\n$liveShareUrl\n';
+      message += 'ðŸ“ Live Location (24 hrs):\n$liveShareUrl\n';
     } else if (position != null) {
       final mapsLink =
           'https://maps.google.com/?q=${position.latitude},${position.longitude}';
@@ -367,7 +367,7 @@ class EvidenceService {
     }
 
     if (zipUrl != null) {
-      message += '📦 Full SOS Evidence (Zip File): $zipUrl\n';
+      message += 'ðŸ“¦ Full SOS Evidence (Zip File): $zipUrl\n';
       message +=
           '(This file contains video, audio, and location logs from this emergency.)\n';
     }
@@ -375,7 +375,7 @@ class EvidenceService {
     message +=
         'Time: ${DateTime.now().toString().substring(0, 16)}\nPlease respond immediately!\n\nTo perfectly simulate override and dial 112 for the victim remotely, click: https://nari-shakti-hacksagon.web.app/escalate/$_currentSosId';
 
-    const platform = MethodChannel('com.narishakti.app/sms');
+    const platform = MethodChannel('com.sahay.app/sms');
 
     for (final contact in contacts) {
       final phone = contact['phone'] as String?;
@@ -400,7 +400,7 @@ class EvidenceService {
     }
   }
 
-  // ── Share / export ─────────────────────────────────────────────────────────
+  // â”€â”€ Share / export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> shareEvidenceViaEmail(
     String zipPath,
@@ -414,12 +414,12 @@ class EvidenceService {
         subject:
             'SOS Evidence - $name - ${DateTime.now().toString().substring(0, 16)}',
         text:
-            'SOS Evidence package from Nari Shakti app.\nUser: $name\nTime: ${DateTime.now()}',
+            'SOS Evidence package from Sahay app.\nUser: $name\nTime: ${DateTime.now()}',
       );
     } catch (e) {}
   }
 
-  // ── Fetch all evidence ─────────────────────────────────────────────────────
+  // â”€â”€ Fetch all evidence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<List<Map<String, dynamic>>> getAllEvidence() async {
     try {

@@ -192,7 +192,7 @@ class SosCountdownActivity : Activity() {
     private fun triggerSOS() {
         Log.i(TAG, "⚡ SOS TRIGGERED from countdown activity")
 
-        val sosIntent = Intent("com.narishakti.SHAKE_SOS_DETECTED").apply {
+        val sosIntent = Intent("com.sahay.SHAKE_SOS_DETECTED").apply {
             setPackage(packageName)
         }
         sendBroadcast(sosIntent)

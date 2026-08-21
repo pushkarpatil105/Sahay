@@ -215,7 +215,7 @@ class ShakeDetectionForegroundService : Service(), SensorEventListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Nari Shakti Protection",
+                "Sahay Protection",
                 NotificationManager.IMPORTANCE_HIGH  // HIGH so it shows on lock screen
             ).apply {
                 description = "SOS protection — shake detection active"
@@ -240,7 +240,7 @@ class ShakeDetectionForegroundService : Service(), SensorEventListener {
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_alert)
-            .setContentTitle("🛡️ Nari Shakti Protection Active")
+            .setContentTitle("🛡️ Sahay Protection Active")
             .setContentText("Shake to trigger SOS — active even when locked")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)

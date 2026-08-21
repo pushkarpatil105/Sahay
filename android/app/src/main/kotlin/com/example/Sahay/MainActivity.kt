@@ -33,9 +33,9 @@ class MainActivity : FlutterActivity() {
             )
         }
     }
-    private val SMS_CHANNEL       = "com.narishakti.app/sms"
-    private val NOTIF_CHANNEL     = "com.narishakti.app/notifications"
-    private val SHAKE_CHANNEL     = "com.narishakti.app/shake_service"
+    private val SMS_CHANNEL       = "com.sahay.app/sms"
+    private val NOTIF_CHANNEL     = "com.sahay.app/notifications"
+    private val SHAKE_CHANNEL     = "com.sahay.app/shake_service"
     private val DANGER_CHANNEL_ID = "danger_zone_channel"
     private val LOCK_SCREEN_CHANNEL_ID = "lock_screen_sos"
     private val LOCK_SCREEN_NOTIF_ID   = 777
@@ -45,7 +45,7 @@ class MainActivity : FlutterActivity() {
     // BroadcastReceiver to catch the SOS button tap
     private val sosReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == "com.narishakti.TRIGGER_SOS") {
+            if (intent?.action == "com.sahay.TRIGGER_SOS") {
                 notifMethodChannel?.invokeMethod("onSosNotificationTapped", null)
             }
         }
@@ -54,7 +54,7 @@ class MainActivity : FlutterActivity() {
     // BroadcastReceiver for countdown cancel
     private val sosCancelReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == "com.narishakti.CANCEL_COUNTDOWN") {
+            if (intent?.action == "com.sahay.CANCEL_COUNTDOWN") {
                 notifMethodChannel?.invokeMethod("onSosCountdownCancelled", null)
             }
         }
@@ -63,7 +63,7 @@ class MainActivity : FlutterActivity() {
     // BroadcastReceiver for native shake SOS detection
     private val shakeSOSReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == "com.narishakti.SHAKE_SOS_DETECTED") {
+            if (intent?.action == "com.sahay.SHAKE_SOS_DETECTED") {
                 notifMethodChannel?.invokeMethod("onShakeSosDetected", null)
             }
         }
@@ -75,13 +75,13 @@ class MainActivity : FlutterActivity() {
 
         // Register receivers
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(sosReceiver, IntentFilter("com.narishakti.TRIGGER_SOS"), RECEIVER_EXPORTED)
-            registerReceiver(sosCancelReceiver, IntentFilter("com.narishakti.CANCEL_COUNTDOWN"), RECEIVER_EXPORTED)
-            registerReceiver(shakeSOSReceiver, IntentFilter("com.narishakti.SHAKE_SOS_DETECTED"), RECEIVER_EXPORTED)
+            registerReceiver(sosReceiver, IntentFilter("com.sahay.TRIGGER_SOS"), RECEIVER_EXPORTED)
+            registerReceiver(sosCancelReceiver, IntentFilter("com.sahay.CANCEL_COUNTDOWN"), RECEIVER_EXPORTED)
+            registerReceiver(shakeSOSReceiver, IntentFilter("com.sahay.SHAKE_SOS_DETECTED"), RECEIVER_EXPORTED)
         } else {
-            registerReceiver(sosReceiver, IntentFilter("com.narishakti.TRIGGER_SOS"))
-            registerReceiver(sosCancelReceiver, IntentFilter("com.narishakti.CANCEL_COUNTDOWN"))
-            registerReceiver(shakeSOSReceiver, IntentFilter("com.narishakti.SHAKE_SOS_DETECTED"))
+            registerReceiver(sosReceiver, IntentFilter("com.sahay.TRIGGER_SOS"))
+            registerReceiver(sosCancelReceiver, IntentFilter("com.sahay.CANCEL_COUNTDOWN"))
+            registerReceiver(shakeSOSReceiver, IntentFilter("com.sahay.SHAKE_SOS_DETECTED"))
         }
 
         // ── SMS Channel ──────────────────────────────────────────────────
@@ -124,7 +124,7 @@ class MainActivity : FlutterActivity() {
                     result.success("shown")
                 }
                 "showSosNotification" -> {
-                    val title   = call.argument<String>("title")   ?: "Nari Shakti Active"
+                    val title   = call.argument<String>("title")   ?: "Sahay Active"
                     val body    = call.argument<String>("body")    ?: "Tap for SOS"
                     val ongoing = call.argument<Boolean>("ongoing") ?: true
                     showLockScreenSosNotification(title, body, ongoing)
@@ -221,7 +221,7 @@ class MainActivity : FlutterActivity() {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         // If we have explicit permission to overlay, bypass the notification sandbox
                         if (android.provider.Settings.canDrawOverlays(this@MainActivity)) {
-                            Log.d("NariShakti", "Overlay permission active - forcing Flutter foreground launch")
+                            Log.d("Sahay", "Overlay permission active - forcing Flutter foreground launch")
                             startActivity(intent)
                         } else {
                             try {
@@ -363,7 +363,7 @@ class MainActivity : FlutterActivity() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val sosIntent = Intent("com.narishakti.TRIGGER_SOS").apply {
+        val sosIntent = Intent("com.sahay.TRIGGER_SOS").apply {
             setPackage(packageName)
         }
         val sosPending = PendingIntent.getBroadcast(
@@ -396,7 +396,7 @@ class MainActivity : FlutterActivity() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val cancelIntent = Intent("com.narishakti.CANCEL_COUNTDOWN").apply {
+        val cancelIntent = Intent("com.sahay.CANCEL_COUNTDOWN").apply {
             setPackage(packageName)
         }
         val cancelPending = PendingIntent.getBroadcast(

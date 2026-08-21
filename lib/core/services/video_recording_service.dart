@@ -1,7 +1,7 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io';
 import 'package:camera/camera.dart';
-import 'package:nari_shakti/features/face_evidence/face_evidence_processor.dart';
+import 'package:sahay/features/face_evidence/face_evidence_processor.dart';
 import 'cloudinary_service.dart';
 
 class VideoRecordingService {
@@ -39,12 +39,12 @@ class VideoRecordingService {
   List<String> get savedChunks => List.unmodifiable(_savedChunks);
   List<String> get uploadedChunkUrls => List.unmodifiable(_uploadedChunkUrls);
 
-  // Returns a shareable summary URL — link to first chunk as proof of evidence
+  // Returns a shareable summary URL â€” link to first chunk as proof of evidence
   // In a real app you'd generate a Cloudinary folder URL
   String? get evidenceSummaryUrl =>
       _uploadedChunkUrls.isNotEmpty ? _uploadedChunkUrls.first : null;
 
-  // ── Start recording ────────────────────────────────────────────────────────
+  // â”€â”€ Start recording â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /// Pre-initialize camera resources to reduce latency when starting recording.
   Future<void> prewarmCamera() async {
@@ -126,15 +126,15 @@ class VideoRecordingService {
         if (_isRecording) await _rotateChunk();
       });
 
-      // Auto stop at 5 minutes — fires onMaxDurationReached callback
+      // Auto stop at 5 minutes â€” fires onMaxDurationReached callback
       _maxDurationTimer = Timer(_maxRecordingDuration, () async {
-        print('Max duration reached — auto stopping evidence');
+        print('Max duration reached â€” auto stopping evidence');
         await stopRecording();
         onMaxDurationReached?.call();
       });
 
       print(
-        'Recording started — ${_chunkDuration.inSeconds}s chunks, max ${_maxRecordingDuration.inMinutes} min',
+        'Recording started â€” ${_chunkDuration.inSeconds}s chunks, max ${_maxRecordingDuration.inMinutes} min',
       );
       startupTimer.stop();
       print(
@@ -148,7 +148,7 @@ class VideoRecordingService {
     }
   }
 
-  // ── Stop recording ─────────────────────────────────────────────────────────
+  // â”€â”€ Stop recording â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<List<String>> stopRecording() async {
     _chunkTimer?.cancel();
@@ -193,7 +193,7 @@ class VideoRecordingService {
     return _savedChunks;
   }
 
-  // ── Chunk helpers ──────────────────────────────────────────────────────────
+  // â”€â”€ Chunk helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> _startChunk() async {
     if (_controller == null || !_controller!.value.isInitialized) return;
@@ -396,3 +396,6 @@ class _FaceChunkTask {
     required this.chunkNum,
   });
 }
+
+
+

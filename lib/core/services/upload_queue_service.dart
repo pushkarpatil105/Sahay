@@ -1,4 +1,4 @@
-// lib/core/services/upload_queue_service.dart
+﻿// lib/core/services/upload_queue_service.dart
 
 import 'dart:async';
 import 'dart:convert';
@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'cloudinary_service.dart';
 import 'upload_status.dart';
 
-// ── Job model ──────────────────────────────────────────────────────────────
+// â”€â”€ Job model â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _UploadJob {
   final String zipPath;
@@ -39,7 +39,7 @@ class _UploadJob {
       );
 }
 
-// ── Service ────────────────────────────────────────────────────────────────
+// â”€â”€ Service â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class UploadQueueService {
   static final UploadQueueService _instance = UploadQueueService._internal();
@@ -60,7 +60,7 @@ class UploadQueueService {
 
   Stream<UploadStatus> get statusStream => _statusController.stream;
 
-  // ── Init ───────────────────────────────────────────────────────────────────
+  // â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> init() async {
     // Clear old stuck jobs from before notifyCount was added
@@ -71,7 +71,7 @@ class UploadQueueService {
         .listen((List<ConnectivityResult> results) {
       final hasInternet = results.any((r) => r != ConnectivityResult.none);
       if (hasInternet) {
-        print('Internet restored — flushing upload queue');
+        print('Internet restored â€” flushing upload queue');
         _scheduleFlush();
       }
     });
@@ -81,7 +81,7 @@ class UploadQueueService {
       if (hasInternet) {
         final jobs = await _loadFromPrefs();
         if (jobs.isNotEmpty) {
-          print('Periodic retry — ${jobs.length} job(s) pending');
+          print('Periodic retry â€” ${jobs.length} job(s) pending');
           _scheduleFlush();
         }
       }
@@ -96,7 +96,7 @@ class UploadQueueService {
     _statusController.close();
   }
 
-  // ── Enqueue ────────────────────────────────────────────────────────────────
+  // â”€â”€ Enqueue â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> enqueue({
     required String zipPath,
@@ -115,13 +115,13 @@ class UploadQueueService {
     _emitStatus(job, UploadStatus(
       sosId: sosId,
       state: UploadState.queued,
-      message: 'Evidence saved locally — uploading to cloud...',
+      message: 'Evidence saved locally â€” uploading to cloud...',
     ));
 
     Future.microtask(() => _processSingleJob(job));
   }
 
-  // ── Flush ──────────────────────────────────────────────────────────────────
+  // â”€â”€ Flush â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   void _scheduleFlush() {
     Future.microtask(_flushQueue);
@@ -145,18 +145,18 @@ class UploadQueueService {
       _retryInProgress = false;
       final remaining = await _loadFromPrefs();
       if (remaining.isNotEmpty) {
-        print('New jobs found after flush — scheduling retry');
+        print('New jobs found after flush â€” scheduling retry');
         Future.delayed(_retryDelay, _scheduleFlush);
       }
     }
   }
 
-  // ── Process one job ────────────────────────────────────────────────────────
+  // â”€â”€ Process one job â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> _processSingleJob(_UploadJob job) async {
     final alreadyUploaded = await _isAlreadyUploaded(job);
     if (alreadyUploaded) {
-      print('Already uploaded: sosId=${job.sosId} — removing');
+      print('Already uploaded: sosId=${job.sosId} â€” removing');
       await _removeFromPrefs(job);
       _statusController.add(UploadStatus(
         sosId: job.sosId,
@@ -168,11 +168,11 @@ class UploadQueueService {
 
     final online = await _isOnline();
     if (!online) {
-      print('No internet — skipping ${job.sosId}');
+      print('No internet â€” skipping ${job.sosId}');
       _emitStatus(job, UploadStatus(
         sosId: job.sosId,
         state: UploadState.queued,
-        message: 'No internet — will retry automatically when connected.',
+        message: 'No internet â€” will retry automatically when connected.',
       ));
       return;
     }
@@ -219,7 +219,7 @@ class UploadQueueService {
     }
   }
 
-  // Only show snackbar up to _maxNotifyCount times — then retry silently
+  // Only show snackbar up to _maxNotifyCount times â€” then retry silently
   void _emitStatus(_UploadJob job, UploadStatus status) {
     if (status.state == UploadState.success) {
       _statusController.add(status);
@@ -232,7 +232,7 @@ class UploadQueueService {
     }
   }
 
-  // ── Legacy cleanup ─────────────────────────────────────────────────────────
+  // â”€â”€ Legacy cleanup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> _clearLegacyStuckJobs() async {
     try {
@@ -262,7 +262,7 @@ class UploadQueueService {
     }
   }
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
+  // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<bool> _isOnline() async {
     try {
@@ -290,7 +290,7 @@ class UploadQueueService {
     }
   }
 
-  // ── Firestore ──────────────────────────────────────────────────────────────
+  // â”€â”€ Firestore â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<bool> _isAlreadyUploaded(_UploadJob job) async {
     try {
@@ -344,7 +344,7 @@ class UploadQueueService {
     } catch (_) {}
   }
 
-  // ── SharedPreferences ──────────────────────────────────────────────────────
+  // â”€â”€ SharedPreferences â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<List<_UploadJob>> _loadFromPrefs() async {
     try {
@@ -369,7 +369,7 @@ class UploadQueueService {
         return m['sosId'] == job.sosId;
       });
       if (already) {
-        print('sosId=${job.sosId} already in queue — skipping');
+        print('sosId=${job.sosId} already in queue â€” skipping');
         return;
       }
       raw.add(jsonEncode(job.toJson()));
@@ -411,3 +411,4 @@ class UploadQueueService {
     }
   }
 }
+

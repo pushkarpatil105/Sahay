@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/services/permission_service.dart';
 
@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
     _navigate();
   }
 
-Future<void> _navigate() async {
+  Future<void> _navigate() async {
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
@@ -55,7 +55,7 @@ Future<void> _navigate() async {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Nari Shakti',
+              'Sahay',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 32,
@@ -66,10 +66,7 @@ Future<void> _navigate() async {
             const SizedBox(height: 8),
             const Text(
               'Your Safety, Our Priority',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.white70, fontSize: 14),
             ),
           ],
         ),

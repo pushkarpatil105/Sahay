@@ -1,8 +1,8 @@
-import 'dart:async';
-import 'package:nari_shakti/core/services/sos_service.dart';
-import 'package:nari_shakti/core/services/lock_screen_sos_service.dart';
-import 'package:nari_shakti/core/services/ble_service.dart';
-import 'package:nari_shakti/main.dart';
+﻿import 'dart:async';
+import 'package:sahay/core/services/sos_service.dart';
+import 'package:sahay/core/services/lock_screen_sos_service.dart';
+import 'package:sahay/core/services/ble_service.dart';
+import 'package:sahay/main.dart';
 
 class SosCountdownService {
   static final SosCountdownService _instance = SosCountdownService._internal();
@@ -29,13 +29,13 @@ class SosCountdownService {
 
       if (_secondsLeft <= 0) {
         _cancelTimer();
-        // Timer callback must be sync — run async work in a fire-and-forget IIFE
+        // Timer callback must be sync â€” run async work in a fire-and-forget IIFE
         () async {
           await SosService().triggerSOSBackground(triggeredBy);
           await BleService().sendCommand('VIB_L');
           await LockScreenSosService().updateNotificationText(
-            '🆘 SOS ACTIVE',
-            'Recording in progress • Tap to open app',
+            'ðŸ†˜ SOS ACTIVE',
+            'Recording in progress â€¢ Tap to open app',
           );
           // Navigate to SOS active screen from background (no BuildContext needed)
           final sosId = SosService().activeSosId;
@@ -68,3 +68,6 @@ class SosCountdownService {
     _isCountingDown = false;
   }
 }
+
+
+

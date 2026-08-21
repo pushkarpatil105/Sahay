@@ -1,9 +1,9 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:nari_shakti/core/services/ble_service.dart';
+import 'package:sahay/core/services/ble_service.dart';
 
 Future<void> showBleConnectSheet(BuildContext context) async {
   await showGeneralDialog(
@@ -115,7 +115,7 @@ class _BleConnectDialogState extends State<_BleConnectDialog> {
                           return _ConnectedState(
                             deviceName: deviceName?.isNotEmpty == true
                                 ? deviceName!
-                                : 'NariShakti device',
+                                : 'Sahay device',
                             onRescan: () => _bleService.startScan(),
                             onDisconnect: () => _bleService.disconnect(),
                           );
@@ -310,7 +310,7 @@ class _BluetoothOffCard extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Bluetooth must be on to find your Nari Shakti device nearby.',
+          'Bluetooth must be on to find your Sahay device nearby.',
           style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
           textAlign: TextAlign.center,
         ),
@@ -438,14 +438,14 @@ class _DeviceList extends StatelessWidget {
                 itemBuilder: (context, i) {
                   final d = devices[i].device;
                   final name = d.platformName.isEmpty
-                      ? 'NariShakti device'
+                      ? 'Sahay device'
                       : d.platformName;
                   final rssi = devices[i].rssi;
                   return _DeviceCard(
                     icon: Icons.developer_board,
                     iconColor: const Color(0xFF0D6EFD),
                     title: name,
-                    subtitle: 'RSSI $rssi • ${d.remoteId.str}',
+                    subtitle: 'RSSI $rssi â€¢ ${d.remoteId.str}',
                     accentColor: const Color(0xFFFF5722),
                     trailing: const _PillState(
                       text: 'Tap to connect',

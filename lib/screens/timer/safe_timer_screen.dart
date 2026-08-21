@@ -1,9 +1,9 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/services/sos_service.dart';
-import 'package:nari_shakti/core/services/lock_screen_sos_service.dart';
+import 'package:sahay/core/services/lock_screen_sos_service.dart';
 
 class SafeTimerScreen extends StatefulWidget {
   /// When true, the timer starts automatically after loading settings
@@ -86,7 +86,7 @@ class _SafeTimerScreenState extends State<SafeTimerScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         if (_safePin.isEmpty) {
-          // PIN not set yet – show settings dialog so user can configure
+          // PIN not set yet â€“ show settings dialog so user can configure
           _showSetPinFirst();
         } else {
           _startTimer();
@@ -182,7 +182,7 @@ class _SafeTimerScreenState extends State<SafeTimerScreen> {
       }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('✅ You\'re safe! Timer stopped.'),
+          content: Text('âœ… You\'re safe! Timer stopped.'),
           backgroundColor: Colors.green,
         ),
       );
@@ -311,7 +311,7 @@ class _SafeTimerScreenState extends State<SafeTimerScreen> {
                     letterSpacing: 8,
                   ),
                   decoration: InputDecoration(
-                    hintText: '••••',
+                    hintText: 'â€¢â€¢â€¢â€¢',
                     hintStyle: const TextStyle(color: Colors.black26),
                     filled: true,
                     fillColor: Colors.grey.shade50,
@@ -445,7 +445,7 @@ class _SafeTimerScreenState extends State<SafeTimerScreen> {
                       '1. Set your timer duration and safe PIN in settings\n'
                       '2. Start the timer before a journey\n'
                       '3. When timer ends, enter your PIN to confirm safety\n'
-                      '4. If PIN not entered in time → SOS auto-triggers',
+                      '4. If PIN not entered in time â†’ SOS auto-triggers',
                       style: TextStyle(
                         color: Colors.black54,
                         fontSize: 13,
@@ -768,3 +768,6 @@ class _SafeTimerScreenState extends State<SafeTimerScreen> {
     );
   }
 }
+
+
+

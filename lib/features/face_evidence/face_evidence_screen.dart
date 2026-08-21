@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+﻿import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'full_screen_face_view.dart';
@@ -169,3 +169,5 @@ class _FaceEvidenceScreenState extends State<FaceEvidenceScreen> {
     );
   }
 }
+
+

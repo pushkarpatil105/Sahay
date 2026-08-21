@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -228,7 +228,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '📎 Evidence ZIP will be sent to this email during SOS',
+                'ðŸ“Ž Evidence ZIP will be sent to this email during SOS',
                 style: TextStyle(fontSize: 12, color: Colors.black38),
               ),
             ),
@@ -301,3 +301,4 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 }
+

@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "nari-shakti-hacksagon"
-  }
+    "default": "nari-shakti-hacksagon",
+    "sahay": "sahay-a312b"
+  },
+  "targets": {},
+  "etags": {}
 }

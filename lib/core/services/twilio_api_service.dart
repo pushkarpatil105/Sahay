@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -12,17 +12,23 @@ class TwilioApiService {
   String get _twilioNumber => dotenv.env['TWILIO_PHONE_NUMBER'] ?? '';
 
   /// Blast calls to all provided phone numbers
-  Future<void> massCallContacts(List<String> phoneNumbers, String victimName) async {
+  Future<void> massCallContacts(
+    List<String> phoneNumbers,
+    String victimName,
+  ) async {
     if (_accountSid.isEmpty || _authToken.isEmpty) {
-      print('⚠️ Twilio keys not configured in .env. Skipping emergency calls.');
+      print(
+        'âš ï¸ Twilio keys not configured in .env. Skipping emergency calls.',
+      );
       return;
     }
 
     // TwiML payload to play when they answer
-    final twiml = '''
+    final twiml =
+        '''
       <Response>
         <Say voice="alice" loop="3">
-          Emergency alert! Nari Shakti SOS has been activated for $victimName. 
+          Emergency alert! Sahay SOS has been activated for $victimName. 
           They are in potential danger. Please check your text messages immediately for their exact live GPS location and evidence links. 
           Respond rapidly.
         </Say>
@@ -35,8 +41,11 @@ class TwilioApiService {
   }
 
   Future<void> _initiateCall(String to, String twiml) async {
-    final url = Uri.parse('https://api.twilio.com/2010-04-01/Accounts/$_accountSid/Calls.json');
-    final authHeader = 'Basic ${base64Encode(utf8.encode('$_accountSid:$_authToken'))}';
+    final url = Uri.parse(
+      'https://api.twilio.com/2010-04-01/Accounts/$_accountSid/Calls.json',
+    );
+    final authHeader =
+        'Basic ${base64Encode(utf8.encode('$_accountSid:$_authToken'))}';
 
     try {
       final response = await http.post(
@@ -45,20 +54,16 @@ class TwilioApiService {
           'Authorization': authHeader,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: {
-          'To': to,
-          'From': _twilioNumber,
-          'Twiml': twiml,
-        },
+        body: {'To': to, 'From': _twilioNumber, 'Twiml': twiml},
       );
 
       if (response.statusCode == 201) {
-        print('✅ Twilio Call dispatched successfully to $to');
+        print('âœ… Twilio Call dispatched successfully to $to');
       } else {
-        print('❌ Twilio Call failed for $to: ${response.body}');
+        print('âŒ Twilio Call failed for $to: ${response.body}');
       }
     } catch (e) {
-      print('❌ Twilio HTTP Exception: $e');
+      print('âŒ Twilio HTTP Exception: $e');
     }
   }
 }

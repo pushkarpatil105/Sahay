@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -10,12 +10,12 @@ class CloudinaryService {
   static const String _cloudName = 'dgacqctuu';
   static const String _uploadPreset = 'nari_shakti_preset';
 
-  // ── Generic upload ─────────────────────────────────────────────────────────
+  // â”€â”€ Generic upload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<String?> uploadFile(
     String filePath, {
     String? resourceType,
-    String? publicId, // use this instead of folder — works on free plan
+    String? publicId, // use this instead of folder â€” works on free plan
   }) async {
     try {
       final file = File(filePath);
@@ -33,7 +33,7 @@ class CloudinaryService {
         ..fields['upload_preset'] = _uploadPreset
         ..files.add(await http.MultipartFile.fromPath('file', filePath));
 
-      // public_id controls the path in Cloudinary — works on free unsigned preset
+      // public_id controls the path in Cloudinary â€” works on free unsigned preset
       // e.g. nari_shakti/sos_123456/chunks/chunk_001
       if (publicId != null) {
         request.fields['public_id'] = publicId;
@@ -51,7 +51,7 @@ class CloudinaryService {
         print('Uploaded: $url');
         return url;
       } else {
-        print('Cloudinary upload failed: ${response.statusCode} — $body');
+        print('Cloudinary upload failed: ${response.statusCode} â€” $body');
         return null;
       }
     } catch (e) {
@@ -60,7 +60,7 @@ class CloudinaryService {
     }
   }
 
-  // ── ZIP upload ─────────────────────────────────────────────────────────────
+  // â”€â”€ ZIP upload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Path in Cloudinary: nari_shakti/{sosId}/evidence
 
   Future<String?> uploadZip(String zipPath, String sosId) async {
@@ -73,7 +73,7 @@ class CloudinaryService {
     );
   }
 
-  // ── Video chunk upload ─────────────────────────────────────────────────────
+  // â”€â”€ Video chunk upload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Path in Cloudinary: nari_shakti/{sosId}/chunks/chunk_001
 
   Future<String?> uploadVideoChunk(
@@ -88,9 +88,9 @@ class CloudinaryService {
     );
   }
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
+  // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  // Cloudinary public_id cannot have special chars — sanitize sosId
+  // Cloudinary public_id cannot have special chars â€” sanitize sosId
   String _cleanId(String sosId) {
     return sosId.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
   }
@@ -113,3 +113,4 @@ class CloudinaryService {
     }
   }
 }
+

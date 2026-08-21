@@ -1,4 +1,4 @@
-enum UploadState { queued, success, failed }
+﻿enum UploadState { queued, success, failed }
  
 class UploadStatus {
   final String sosId;
@@ -11,3 +11,4 @@ class UploadStatus {
     required this.message,
   });
 }
+
