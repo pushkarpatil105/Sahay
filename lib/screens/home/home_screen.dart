@@ -10,6 +10,7 @@ import '../map/safety_map_screen.dart';
 import '../services/hospital_finder_screen.dart';
 import '../services/police_finder_screen.dart';
 import '../services/nearby_service_finder_screen.dart';
+import '../services/tow_assistance_screen.dart';
 import '../../core/services/sos_service.dart';
 import '../../core/services/sos_countdown_service.dart';
 import '../../core/services/ble_service.dart';
@@ -916,7 +917,7 @@ class _HomePageState extends State<_HomePage> with TickerProviderStateMixin {
                     icon: Icons.car_repair_outlined,
                     title: 'Tow Truck',
                     subtitle: 'Vehicle breakdown',
-                    onTap: () => _showServiceMessage('Tow truck'),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TowAssistanceScreen())),
                   ),
                   _ServiceCard(
                     icon: Icons.build_outlined,

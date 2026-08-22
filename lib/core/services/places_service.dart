@@ -100,6 +100,8 @@ class PlacesService {
       'https://maps.googleapis.com/maps/api/place/details/json';
   static const _nearbyBase =
       'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
+  static const _textSearchBase =
+      'https://maps.googleapis.com/maps/api/place/textsearch/json';
 
   Future<List<HospitalPlace>> getNearbyHospitals({
     required double latitude,
@@ -210,6 +212,46 @@ class PlacesService {
       places.sort((a, b) => a.distanceMeters.compareTo(b.distanceMeters));
       return places;
     } catch (_) { return []; }
+  }
+
+  /// Toll plazas do not have a dedicated Places type. Text Search is used so
+  /// the map returns Google's toll-plaza results instead of an unrelated POI.
+  Future<List<NearbyServicePlace>> getNearbyTollPlazas({
+    required double latitude,
+    required double longitude,
+  }) async {
+    final apiKey = ApiKeyService.getGooglePlacesApiKey();
+    final query = Uri.encodeComponent('toll plaza near $latitude,$longitude');
+    final url = Uri.parse('$_textSearchBase?query=$query&key=$apiKey');
+    try {
+      final response = await http.get(url).timeout(const Duration(seconds: 15));
+      if (response.statusCode != 200) return [];
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      if (data['status'] != 'OK' && data['status'] != 'ZERO_RESULTS') return [];
+      final tolls = <NearbyServicePlace>[];
+      for (final value in (data['results'] as List?) ?? []) {
+        final place = value as Map<String, dynamic>;
+        final location = place['geometry']?['location'] as Map<String, dynamic>?;
+        final lat = (location?['lat'] as num?)?.toDouble();
+        final lng = (location?['lng'] as num?)?.toDouble();
+        final id = place['place_id']?.toString();
+        if (lat == null || lng == null || id == null) continue;
+        tolls.add(NearbyServicePlace(
+          placeId: id,
+          name: place['name']?.toString() ?? 'Toll plaza',
+          latitude: lat,
+          longitude: lng,
+          address: place['formatted_address']?.toString() ??
+              place['vicinity']?.toString() ??
+              'Address unavailable',
+          distanceMeters: _distanceMeters(latitude, longitude, lat, lng),
+        ));
+      }
+      tolls.sort((a, b) => a.distanceMeters.compareTo(b.distanceMeters));
+      return tolls;
+    } catch (_) {
+      return [];
+    }
   }
 
   Future<HospitalPlace> getHospitalDetails(HospitalPlace hospital) async {

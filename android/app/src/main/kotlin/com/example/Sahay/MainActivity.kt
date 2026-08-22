@@ -7,7 +7,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -19,6 +22,10 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
+
+    companion object {
+        private const val SMS_SEND_TIMEOUT_MS = 30_000L
+    }
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +48,7 @@ class MainActivity : FlutterActivity() {
     private val LOCK_SCREEN_NOTIF_ID   = 777
 
     private var notifMethodChannel: MethodChannel? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     // BroadcastReceiver to catch the SOS button tap
     private val sosReceiver = object : BroadcastReceiver() {
@@ -88,18 +96,11 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SMS_CHANNEL)
             .setMethodCallHandler { call, result ->
                 if (call.method == "sendSMS") {
-                    val phone   = call.argument<String>("phone")
-                    val message = call.argument<String>("message")
-                    try {
-                        val smsManager = SmsManager.getDefault()
-                        val parts      = smsManager.divideMessage(message)
-                        smsManager.sendMultipartTextMessage(
-                            phone, null, parts, null, null
-                        )
-                        result.success("sent")
-                    } catch (e: Exception) {
-                        result.error("SMS_ERROR", e.message, null)
-                    }
+                    sendSms(
+                        phone = call.argument<String>("phone"),
+                        message = call.argument<String>("message"),
+                        result = result,
+                    )
                 } else {
                     result.notImplemented()
                 }
@@ -298,6 +299,102 @@ class MainActivity : FlutterActivity() {
         unregisterReceiver(sosReceiver)
         unregisterReceiver(sosCancelReceiver)
         unregisterReceiver(shakeSOSReceiver)
+    }
+
+    /**
+     * Sends through the device's active SIM and waits for Android's SENT
+     * callback. `SmsManager.send...` only queues a message; without this
+     * callback the Flutter side could report success even when the SIM, radio,
+     * or carrier rejected it.
+     */
+    private fun sendSms(phone: String?, message: String?, result: MethodChannel.Result) {
+        val normalizedPhone = phone?.replace(Regex("[\\s()\\-]"), "")
+        if (normalizedPhone.isNullOrBlank() || !Regex("^\\+?[0-9]{7,15}$").matches(normalizedPhone)) {
+            result.error("INVALID_PHONE", "A valid international or local phone number is required.", null)
+            return
+        }
+        if (message.isNullOrBlank()) {
+            result.error("INVALID_MESSAGE", "SMS message cannot be empty.", null)
+            return
+        }
+        if (checkSelfPermission(android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            result.error("SMS_PERMISSION_DENIED", "Send SMS permission has not been granted.", null)
+            return
+        }
+
+        var cleanupCallback: (() -> Unit)? = null
+        try {
+            val smsManager = SmsManager.getDefault()
+            val parts = smsManager.divideMessage(message)
+            if (parts.isEmpty()) {
+                result.error("INVALID_MESSAGE", "SMS message cannot be empty.", null)
+                return
+            }
+
+            val action = "$packageName.SMS_SENT.${System.nanoTime()}"
+            var completedParts = 0
+            var finished = false
+            lateinit var receiver: BroadcastReceiver
+            lateinit var timeout: Runnable
+
+            fun cleanup() {
+                mainHandler.removeCallbacks(timeout)
+                try {
+                    unregisterReceiver(receiver)
+                } catch (_: IllegalArgumentException) {
+                    // Receiver was already unregistered after another result.
+                }
+            }
+            cleanupCallback = ::cleanup
+
+            fun fail(code: String, detail: String) {
+                if (finished) return
+                finished = true
+                cleanup()
+                result.error(code, detail, null)
+            }
+
+            receiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    if (finished) return
+                    if (resultCode != android.app.Activity.RESULT_OK) {
+                        fail("SMS_SEND_FAILED", "Android SMS service rejected the message (result code: $resultCode).")
+                        return
+                    }
+                    completedParts += 1
+                    if (completedParts == parts.size) {
+                        finished = true
+                        cleanup()
+                        result.success(mapOf("status" to "sent", "parts" to parts.size))
+                    }
+                }
+            }
+            timeout = Runnable {
+                fail("SMS_SEND_TIMEOUT", "No response from the Android SMS service within 30 seconds.")
+            }
+
+            val filter = IntentFilter(action)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(receiver, filter, RECEIVER_NOT_EXPORTED)
+            } else {
+                @Suppress("DEPRECATION")
+                registerReceiver(receiver, filter)
+            }
+            val sentIntent = PendingIntent.getBroadcast(
+                this,
+                action.hashCode(),
+                Intent(action).setPackage(packageName),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+            val sentIntents = ArrayList<PendingIntent>(parts.size).apply {
+                repeat(parts.size) { add(sentIntent) }
+            }
+            mainHandler.postDelayed(timeout, SMS_SEND_TIMEOUT_MS)
+            smsManager.sendMultipartTextMessage(normalizedPhone, null, parts, sentIntents, null)
+        } catch (e: Exception) {
+            cleanupCallback?.invoke()
+            result.error("SMS_ERROR", e.message ?: "Unable to send SMS.", null)
+        }
     }
 
     private fun createNotificationChannel() {
