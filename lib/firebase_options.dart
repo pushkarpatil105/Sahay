@@ -77,13 +77,12 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBm6pp8C-3g4ChAoozTvbVKXSncy6jtNaI',
-    appId: '1:992789459549:web:508cd1676c065e5df793b4',
-    messagingSenderId: '992789459549',
-    projectId: 'nari-shakti-hacksagon',
-    authDomain: 'nari-shakti-hacksagon.firebaseapp.com',
-    databaseURL: 'https://nari-shakti-hacksagon-default-rtdb.firebaseio.com',
-    storageBucket: 'nari-shakti-hacksagon.firebasestorage.app',
-    measurementId: 'G-Q54VWBRSRQ',
+    apiKey: 'AIzaSyD0Yf5kf4liUyTCZxFKyAjn4ddLlwpLi6Y',
+    appId: '1:581128416323:web:eba4f8c7c4794e1310f8f6',
+    messagingSenderId: '581128416323',
+    projectId: 'sahay-a312b',
+    authDomain: 'sahay-a312b.firebaseapp.com',
+    storageBucket: 'sahay-a312b.firebasestorage.app',
+    measurementId: 'G-7Z8CE9MCK8',
   );
 }

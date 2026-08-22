@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/services/places_service.dart';
+import '../../core/services/demo_service_request_service.dart';
 import '../navigation_screen.dart';
+import 'demo_service_request_screen.dart';
 
 class HospitalFinderScreen extends StatefulWidget {
   const HospitalFinderScreen({super.key});
@@ -71,7 +75,21 @@ class _HospitalFinderScreenState extends State<HospitalFinderScreen> {
         permission == LocationPermission.deniedForever) {
       throw Exception('Location permission is required to find hospitals.');
     }
-    return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    final lastKnownPosition = await Geolocator.getLastKnownPosition();
+    if (lastKnownPosition != null) return lastKnownPosition;
+
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 8),
+        ),
+      );
+    } on TimeoutException {
+      throw Exception(
+        'Unable to get your location quickly. Move to an open area and try again.',
+      );
+    }
   }
 
   void _focusHospital(HospitalPlace hospital) {
@@ -97,8 +115,43 @@ class _HospitalFinderScreenState extends State<HospitalFinderScreen> {
           Navigator.pop(context);
           _openNavigation(detailedHospital);
         },
+        onRequestAmbulance: () => _requestAmbulance(detailedHospital),
       ),
     );
+  }
+
+  Future<void> _requestAmbulance(HospitalPlace hospital) async {
+    final position = _position;
+    if (position == null) return;
+    try {
+      final requestId = await DemoServiceRequestService()
+          .createHospitalAmbulanceRequest(
+        userLatitude: position.latitude,
+        userLongitude: position.longitude,
+        hospitalName: hospital.name,
+        hospitalPlaceId: hospital.placeId,
+        hospitalLatitude: hospital.latitude,
+        hospitalLongitude: hospital.longitude,
+      );
+      if (!mounted) return;
+      Navigator.pop(context);
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => DemoServiceRequestScreen(
+            serviceType: DemoServiceType.ambulance,
+            initialRequestId: requestId,
+          ),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.toString().replaceFirst('Exception: ', '')),
+        ),
+      );
+    }
   }
 
   Future<void> _callHospital(String? number) async {
@@ -205,7 +258,8 @@ class _HospitalFinderScreenState extends State<HospitalFinderScreen> {
                   child: ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     itemCount: _hospitals.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 10),
                     itemBuilder: (context, index) {
                       final hospital = _hospitals[index];
                       return _HospitalCard(
@@ -296,11 +350,13 @@ class _HospitalDetailsSheet extends StatelessWidget {
     required this.hospital,
     required this.onCall,
     required this.onNavigate,
+    required this.onRequestAmbulance,
   });
 
   final HospitalPlace hospital;
   final VoidCallback onCall;
   final VoidCallback onNavigate;
+  final VoidCallback onRequestAmbulance;
 
   @override
   Widget build(BuildContext context) {
@@ -341,7 +397,7 @@ class _HospitalDetailsSheet extends StatelessWidget {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        _formatDistance(hospital.distanceMeters) + ' away',
+                        '${_formatDistance(hospital.distanceMeters)} away',
                         style: const TextStyle(color: Color(0xFF178C46)),
                       ),
                       if (hospital.rating != null) ...[
@@ -384,6 +440,21 @@ class _HospitalDetailsSheet extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: onRequestAmbulance,
+                icon: const Icon(Icons.send_outlined),
+                label: const Text('Request Ambulance'),
+              ),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Sends a simulated request to the demo admin dashboard; no real ambulance is called.',
+              style: TextStyle(fontSize: 12, color: Colors.black54),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
@@ -412,7 +483,7 @@ class _HospitalPhoto extends StatelessWidget {
             : Image.network(
                 url!,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const ColoredBox(
+                errorBuilder: (context, error, stackTrace) => const ColoredBox(
                   color: Color(0xFFEAF4EE),
                   child: Icon(Icons.local_hospital, color: Color(0xFF178C46)),
                 ),

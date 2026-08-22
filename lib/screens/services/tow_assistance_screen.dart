@@ -5,6 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/services/places_service.dart';
 import '../../core/services/tow_service.dart';
+import '../../core/services/demo_service_request_service.dart';
+import 'demo_service_request_screen.dart';
 
 class TowAssistanceScreen extends StatefulWidget {
   const TowAssistanceScreen({super.key});
@@ -139,8 +141,27 @@ class _TowAssistanceScreenState extends State<TowAssistanceScreen> {
       builder: (context) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-          child: _TowDetails(operator: operator, onCall: _call, onWhatsApp: _whatsApp,
-              onNavigate: _navigate),
+          child: _TowDetails(
+            operator: operator,
+            onCall: _call,
+            onWhatsApp: _whatsApp,
+            onNavigate: _navigate,
+            onRequestDemo: () {
+              Navigator.pop(context);
+              _openDemoTowRequest();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openDemoTowRequest() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const DemoServiceRequestScreen(
+          serviceType: DemoServiceType.towing,
         ),
       ),
     );
@@ -214,7 +235,18 @@ class _TowAssistanceScreenState extends State<TowAssistanceScreen> {
                     const SizedBox(height: 10),
                     ..._operators.map((operator) => Padding(
                       padding: const EdgeInsets.only(bottom: 10),
-                      child: Card(child: Padding(padding: const EdgeInsets.all(14), child: _TowDetails(operator: operator, onCall: _call, onWhatsApp: _whatsApp, onNavigate: _navigate))),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: _TowDetails(
+                            operator: operator,
+                            onCall: _call,
+                            onWhatsApp: _whatsApp,
+                            onNavigate: _navigate,
+                            onRequestDemo: _openDemoTowRequest,
+                          ),
+                        ),
+                      ),
                     )),
                     if (_tollPlazas.isNotEmpty) ...[
                       const SizedBox(height: 10),
@@ -229,11 +261,12 @@ class _TowAssistanceScreenState extends State<TowAssistanceScreen> {
 }
 
 class _TowDetails extends StatelessWidget {
-  const _TowDetails({required this.operator, required this.onCall, required this.onWhatsApp, required this.onNavigate});
+  const _TowDetails({required this.operator, required this.onCall, required this.onWhatsApp, required this.onNavigate, required this.onRequestDemo});
   final TowOperator operator;
   final Future<void> Function(String) onCall;
   final Future<void> Function(String) onWhatsApp;
   final Future<void> Function(double, double) onNavigate;
+  final VoidCallback onRequestDemo;
 
   @override
   Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -250,6 +283,17 @@ class _TowDetails extends StatelessWidget {
       const SizedBox(width: 8),
       Expanded(child: ElevatedButton.icon(onPressed: operator.hasPhone ? () => onCall(operator.phone) : null, icon: const Icon(Icons.call), label: const Text('Call'))),
     ]),
+    const SizedBox(height: 8),
+    SizedBox(
+      width: double.infinity,
+      child: FilledButton.icon(
+        onPressed: onRequestDemo,
+        icon: const Icon(Icons.send_outlined),
+        label: const Text('Request demo tow service'),
+      ),
+    ),
+    const SizedBox(height: 5),
+    const Text('Sends a simulated request to the demo admin dashboard; no real operator is called.', style: TextStyle(fontSize: 12, color: Colors.black54), textAlign: TextAlign.center),
   ]);
 }
 

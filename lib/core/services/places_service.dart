@@ -1,4 +1,5 @@
 ﻿import 'dart:convert';
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:http/http.dart' as http;
 import 'package:sahay/core/services/api_key_service.dart';
@@ -112,10 +113,21 @@ class PlacesService {
       '$_nearbyBase?location=$latitude,$longitude&type=hospital&rankby=distance&key=$apiKey',
     );
     try {
-      final response = await http.get(url).timeout(const Duration(seconds: 15));
-      if (response.statusCode != 200) return [];
+      final response = await http.get(url).timeout(const Duration(seconds: 8));
+      if (response.statusCode != 200) {
+        throw Exception('Nearby hospitals could not be loaded. Please try again.');
+      }
       final data = json.decode(response.body) as Map<String, dynamic>;
-      if (data['status'] != 'OK' && data['status'] != 'ZERO_RESULTS') return [];
+      final status = data['status']?.toString();
+      if (status == 'ZERO_RESULTS') return [];
+      if (status != 'OK') {
+        final detail = data['error_message']?.toString();
+        throw Exception(
+          detail == null || detail.isEmpty
+              ? 'Nearby hospitals could not be loaded ($status).'
+              : detail,
+        );
+      }
 
       final results = (data['results'] as List?) ?? [];
       final hospitals = <HospitalPlace>[];
@@ -149,8 +161,8 @@ class PlacesService {
       }
       hospitals.sort((a, b) => a.distanceMeters.compareTo(b.distanceMeters));
       return hospitals;
-    } catch (_) {
-      return [];
+    } on TimeoutException {
+      throw Exception('Nearby hospital search timed out. Check your internet connection.');
     }
   }
 

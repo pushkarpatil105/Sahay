@@ -1,12 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../core/services/demo_service_request_service.dart';
 
 class DemoServiceRequestScreen extends StatefulWidget {
-  const DemoServiceRequestScreen({super.key, required this.serviceType});
+  const DemoServiceRequestScreen({
+    super.key,
+    required this.serviceType,
+    this.initialRequestId,
+  });
 
   final DemoServiceType serviceType;
+  final String? initialRequestId;
 
   @override
   State<DemoServiceRequestScreen> createState() => _DemoServiceRequestScreenState();
@@ -18,6 +25,12 @@ class _DemoServiceRequestScreenState extends State<DemoServiceRequestScreen> {
   bool _creating = false;
   bool _cancelling = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestId = widget.initialRequestId;
+  }
 
   Future<void> _requestHelp() async {
     setState(() {
@@ -48,7 +61,21 @@ class _DemoServiceRequestScreenState extends State<DemoServiceRequestScreen> {
     if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
       throw Exception('Location permission is required to send the demo request.');
     }
-    return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    final lastKnownPosition = await Geolocator.getLastKnownPosition();
+    if (lastKnownPosition != null) return lastKnownPosition;
+
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 8),
+        ),
+      );
+    } on TimeoutException {
+      throw Exception(
+        'Unable to get your location quickly. Move to an open area and try again.',
+      );
+    }
   }
 
   Future<void> _cancelRequest() async {

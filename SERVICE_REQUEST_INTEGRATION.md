@@ -61,6 +61,20 @@ Allowed `status` values: `pending`, `assigned`, `accepted`, `rejected`, `reassig
 | `request_id`, `user_id`, `user_name`, `service_type`, `location`, `is_demo`, `created_at` | User App on creation only |
 | `status`, `assigned_provider_id`, `assigned_provider_name`, `escalation_count`, `updated_at` | Admin Dashboard, except User App can write `status: "cancelled"` |
 
+### 3.1.1 Hospital selection demo extension
+
+When a user selects a live Google Places hospital and taps **Request Ambulance**, the User App creates an ambulance request with these additional fields:
+
+```json
+{
+  "requested_hospital_name": "Selected Google Places hospital name",
+  "requested_hospital_place_id": "Selected Google Places place_id",
+  "requested_hospital_location": { "lat": 22.7196, "lng": 75.8577 }
+}
+```
+
+For this hackathon flow only, the User App sets `assigned_provider_id: "provider_001"` on that initial hospital request. This intentionally routes every selected hospital request to the demo admin account; it must not be derived from the selected Google Places hospital. The Admin Dashboard still writes the provider name and subsequent status changes.
+
 ### 3.2 `providers`
 
 Static seed data entered in Firebase Console:
