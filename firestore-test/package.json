@@ -1,0 +1,14 @@
+{
+  "name": "firestore-test",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Standalone Firestore demo-service request test",
+  "scripts": {
+    "listen": "node listen-requests.js",
+    "write": "node write-request.js",
+    "update": "node update-request.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0"
+  }
+}

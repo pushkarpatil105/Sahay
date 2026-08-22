@@ -11,6 +11,8 @@ import '../services/hospital_finder_screen.dart';
 import '../services/police_finder_screen.dart';
 import '../services/nearby_service_finder_screen.dart';
 import '../services/tow_assistance_screen.dart';
+import '../services/demo_service_request_screen.dart';
+import '../../core/services/demo_service_request_service.dart';
 import '../../core/services/sos_service.dart';
 import '../../core/services/sos_countdown_service.dart';
 import '../../core/services/ble_service.dart';
@@ -936,6 +938,50 @@ class _HomePageState extends State<_HomePage> with TickerProviderStateMixin {
                     title: 'Hospital',
                     subtitle: 'Find trauma centres',
                     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NearbyServiceFinderScreen(title: 'Nearby Hospitals', placesType: 'hospital', icon: Icons.local_hospital))),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 22),
+              const Text(
+                'DEMO SERVICE REQUESTS',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                  letterSpacing: 0.6,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const DemoServiceRequestScreen(
+                            serviceType: DemoServiceType.ambulance,
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.local_hospital_outlined),
+                      label: const Text('Demo Ambulance'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const DemoServiceRequestScreen(
+                            serviceType: DemoServiceType.towing,
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.car_repair_outlined),
+                      label: const Text('Demo Tow'),
+                    ),
                   ),
                 ],
               ),
